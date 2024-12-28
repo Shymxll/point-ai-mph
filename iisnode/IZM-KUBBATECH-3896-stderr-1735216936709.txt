@@ -1,0 +1,4 @@
+(node:3896) [DEP0005] DeprecationWarning: Buffer() is deprecated due to security and usability issues. Please use the Buffer.alloc(), Buffer.allocUnsafe(), or Buffer.from() methods instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:3896) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(node:3896) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.

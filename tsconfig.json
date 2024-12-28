@@ -1,0 +1,38 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": false,
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "module": "esnext",
+    "noEmitOnError": false,
+    "moduleResolution": "bundler",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "jsx": "preserve",
+    "incremental": true,
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "noImplicitAny": false, // Belirsiz tür hatalarını devre dışı bırak
+    "noImplicitThis": false, // Belirsiz 'this' hatalarını devre dışı bırak
+    "strictNullChecks": false, // Null kontrolünü devre dışı bırak
+    "strictFunctionTypes": false, // Sıkı fonksiyon türlerini devre dışı bırak
+    "strictBindCallApply": false, // Sıkı bind, call ve apply denetimlerini devre dışı bırak
+    "strictPropertyInitialization": false, // Sıkı property başlatma denetimlerini devre dışı bırak
+    "noImplicitReturns": false, // Belirsiz dönüş hatalarını devre dışı bırak
+    "noFallthroughCasesInSwitch": false, // Switch-case hatalarını devre dışı bırak
+    "noUnusedLocals": false, // Kullanılmayan yerel değişken hatalarını devre dışı bırak
+    "noUnusedParameters": false // Kullanılmayan parametre hatalarını devre dışı bırak
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}
