@@ -1,6 +1,7 @@
-import { MessageCircle, PlusCircleIcon } from 'lucide-react';
+import { PlusCircleIcon } from 'lucide-react';
 import React from 'react'
 import ChatGroupModel from './chat-group-model';
+import { ChatBubbleLeftIcon } from '@heroicons/react/24/outline';
 
 interface ChatGroupProps {
     chats: { id: string; name: string; state: string }[]
@@ -45,7 +46,7 @@ function ChatGroup(
                     hover:bg-slate-100 ${currenChatGroupId === chat.id ? 'bg-slate-200' : ''} 
                   `}
                 >
-                    <MessageCircle className="mr-2 h-4 w-4" />
+                    <ChatBubbleLeftIcon className="mr-2 h-4 w-4 text-red-500" fill="currentColor" />
                     {chat.name}
                     <ChatGroupModel 
                         groupId={chat.id}

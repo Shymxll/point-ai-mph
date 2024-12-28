@@ -14,7 +14,6 @@ import questionService from '@/commons/services/QuestionService'
 import { useAuth } from '@/context/authContext'
 import { QuestionGroup } from '@/commons/models/QuestionModels'
 import Image from 'next/image'
-
 interface ChatSidebarProps {
     onChatGroupClick: (chatGroupId: string) => void
     onNewChatGroupClick: () => void
@@ -36,34 +35,35 @@ export function ChatSidebar(
     {
         onChatGroupClick,
         onNewChatGroupClick,
-        currentChatGroupId   
+        currentChatGroupId
     }: ChatSidebarProps
 ) {
-     const questionGroupList = useQuestionGroupList()
+    const questionGroupList = useQuestionGroupList()
 
-     React.useEffect(() => {
+    React.useEffect(() => {
         questionGroupList.refetch()
-        }, [])  
+    }, [])
     return (
         <Sidebar
 
         >
             <SidebarHeader className='text-red-600 justify-between flex flex-row items-center font-bold text-2xl font-mono' >
                 <div className='flex flex-row items-center'>
-                <Image src='/mphLogo.png' width={50} height={50} alt='logo' />
-            
-                <div
-                    className='text-white sm:text-white pl-2 md:text-red-700'
-                >Point AI</div> 
+                    <Image src='/mphLogo.png' width={50} height={50} alt='logo' />
+
+                    <div
+                        className='text-white sm:text-white pl-2 md:text-red-700'
+                    >Point AI</div>
                 </div>
             </SidebarHeader>
             <SidebarContent>
-                <ScrollArea className="h-[calc(100vh-5rem)]">
+                <ScrollArea className="h-[calc(100vh-5rem)]"
+                >
                     <ChatGroup
                         currentChatGroupId={currentChatGroupId}
                         chats={
                             [
-                                ...(Array.isArray(questionGroupList.data?.data) ? questionGroupList.data.data.map((group : QuestionGroup) => ({
+                                ...(Array.isArray(questionGroupList.data?.data) ? questionGroupList.data.data.map((group: QuestionGroup) => ({
                                     id: group.groupId,
                                     name: group.groupName,
                                     state: group.state,

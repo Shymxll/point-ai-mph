@@ -4,12 +4,14 @@ import { useState, useEffect, useRef } from 'react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Avatar } from '@radix-ui/react-avatar'
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import { QuestionDetailInsert, QuestionGroupDetails } from '@/commons/models/QuestionModels'
 import openaiService from '@/commons/services/OpenaiService'
 import { OpenaiResponse } from '@/commons/models/OpenaiModels'
 import { useAuth } from '@/context/authContext'
-import { useQuestionGroupList } from '../hooks/useQuestionGroupList'
-//TODO:chat group id aldım 
+import Image from 'next/image'
+
 interface AIChatProps {
   groupId: number | undefined | null
   chatItems: QuestionGroupDetails[]
@@ -20,8 +22,9 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
   const [messages, setMessages] = useState<QuestionGroupDetails[]>([])
   const [input, setInput] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [currentStreamingText, setCurrentStreamingText] = useState('')
+  const [isStreaming, setIsStreaming] = useState(false)
   const auth = useAuth()
-  const questionGroupList = useQuestionGroupList()
 
   // Scroll ref tanımlaması
   const scrollRef = useRef<HTMLDivElement | null>(null)
@@ -38,7 +41,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
   }, [messages])
 
   console.log('chatItems:', chatItems)
-  
+
   const sendAI = async (question: string): Promise<string> => {
     return openaiService.sendOpenaiRequest({
       content: question,
@@ -50,31 +53,77 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
     })
   }
 
+  const streamText = async (text: string) => {
+    setIsStreaming(true)
+    let currentText = ''
+
+    for (let i = 0; i < text.length; i += 5) {
+      currentText += text.slice(i, i + 5)
+      setCurrentStreamingText(currentText)
+      
+      // Her güncelleme sonrası scroll
+      if (scrollRef.current) {
+        scrollRef.current.scrollIntoView({ behavior: 'smooth' })
+      }
+      
+      await new Promise(resolve => setTimeout(resolve, 20))
+    }
+
+    setIsStreaming(false)
+    setCurrentStreamingText('')
+  }
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
     if (input.trim()) {
       setIsLoading(true)
+      
+
 
       const aiMessage = await sendAI(input)
-      // TODO: chatgroup id ekledim
+
+      // Mesajı ekle
+      const newMessage: QuestionGroupDetails = {
+        question: input,
+        answer: '',
+        groupId: groupId || null,
+      }
+      setMessages(prev => [...prev, newMessage])
+
+      // Streaming başlat
+      await streamText(aiMessage)
+
+      // Mesajı güncelle
+      newMessage.answer = aiMessage
+
+      setMessages(prev => [...prev.slice(0, -1), newMessage])
+
       sendMessage({
         question: input,
         groupId: groupId || null,
         answer: aiMessage,
         userId: auth.user?.userId || '',
       })
-      setInput('')
 
+      setInput('')
       setIsLoading(false)
-      if (chatItems.length === 0) {
-        questionGroupList.refetch()
-      }
+      
     }
   }
 
   return (
-    <div className="flex h-screen flex-col w-full justify-center overflow-hidden">
-      <div className="flex-1 p-4 space-y-4 overflow-auto w-full h-screen items-end md:px-52">
+    <div className="flex h-screen flex-col w-full justify-center overflow-hidden relative">
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="/mphLogo.png"
+          alt="background logo"
+          layout="fill"
+          objectFit="contain"
+          className="opacity-5 w-full h-full py-20 pb-40"
+        />
+      </div>
+      <div className="flex-1 p-4 space-y-4 overflow-auto w-full h-screen items-end md:px-52 relative z-10">
         {messages.map((message: QuestionGroupDetails, index) => (
           <div key={index}>
             {/* Kullanıcı Mesajı */}
@@ -82,7 +131,6 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
               <div className="flex gap-3 items-center">
                 <div
                   className="rounded-lg max-w-[600px] bg-primary text-primary-foreground p-3 text-sm break-words"
-                  style={{ whiteSpace: 'pre-wrap' }}
                 >
                   {message?.question}
                 </div>
@@ -93,11 +141,25 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
             {/* AI Yanıtı */}
             <div className="flex justify-start mb-4">
               <div className="flex gap-3 items-center flex-row-reverse">
-                <div
-                  className="rounded-lg max-w-[600px] bg-muted p-3 text-sm break-words"
-                  style={{ whiteSpace: 'pre-wrap' }}
-                >
-                  {message?.answer}
+                <div className="rounded-lg max-w-[600px] bg-muted p-3 text-sm break-words prose prose-sm dark:prose-invert">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkGfm]}
+                    components={{
+                      pre: ({ ...props }) => (
+                        <pre className="bg-gray-800 text-white p-3 rounded-md overflow-auto" {...props} />
+                      ),
+                      code: ({ inline, ...props }) => (
+                        inline
+                          ? <code className="bg-gray-200 dark:bg-gray-800 px-1 py-1 rounded" {...props} />
+                          : <code className="block" {...props} />
+                      ),
+                    }}
+                    className="prose prose-sm dark:prose-invert text-base"
+                  >
+                    {isStreaming && index === messages.length - 1
+                      ? currentStreamingText
+                      : message?.answer || ''}
+                  </ReactMarkdown>
                 </div>
                 <Avatar className="w-5 h-5 border rounded-full bg-black" />
               </div>
@@ -108,7 +170,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
         <div ref={scrollRef} />
       </div>
 
-      <div className="border-t p-4 bg-primary">
+      <div className="border-t p-4 bg-primary relative z-10">
         <form onSubmit={handleSubmit} className="justify-center flex space-x-2">
           <Input
             value={input}

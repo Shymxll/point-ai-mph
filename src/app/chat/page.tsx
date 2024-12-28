@@ -46,6 +46,7 @@ function Page() {
             }])
             console.log("Data:",data)
             setChatGroupId(data.data.groupId)
+            questionGroupList.refetch()
         },
     })
     console.log("GroupID:",chatGroupId)

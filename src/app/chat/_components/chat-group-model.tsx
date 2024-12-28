@@ -12,11 +12,11 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Edit3Icon } from 'lucide-react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import questionService from '@/commons/services/QuestionService'
 import { Switch } from '@/components/ui/switch'
 import { Label } from '@radix-ui/react-dropdown-menu'
+import { AdjustmentsHorizontalIcon } from '@heroicons/react/24/outline'
 
 interface ChatGroupModelProps {
     groupId: string
@@ -76,8 +76,8 @@ function ChatGroupModel({ groupId, groupName }: ChatGroupModelProps) {
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-                <Edit3Icon
-                    className="ml-auto h-4 w-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-200"
+                <AdjustmentsHorizontalIcon
+                    className="ml-auto h-4 w-4 z-10  transition-opacity duration-200"
                     key={groupId}
                 />
             </DialogTrigger>
