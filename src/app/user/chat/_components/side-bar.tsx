@@ -14,6 +14,7 @@ import questionService from '@/commons/services/QuestionService'
 import { useAuth } from '@/context/authContext'
 import { QuestionGroup } from '@/commons/models/QuestionModels'
 import Image from 'next/image'
+import { PlusCircleIcon } from '@heroicons/react/24/outline'
 
 
 interface ChatSidebarProps {
@@ -59,8 +60,20 @@ export function ChatSidebar(
                 </div>
             </SidebarHeader>
             <SidebarContent>
+                <div
+                    onClick={() => onNewChatGroupClick()}
+                    className="w-full px-4 justify-start
+                    flex items-center p-2 rounded-md bg-popover cursor-pointer
+                    hover:bg-popover-hover transition-colors duration-200 
+                    hover:bg-slate-100 
+                  "
+                >
+                    <PlusCircleIcon className="mr-2 h-4 w-4" />
+                    Yeni Chat Grubu
+                </div>
                 <ScrollArea className="h-[calc(100vh-5rem)]"
                 >
+                    
                     <ChatGroup
                         currentChatGroupId={currentChatGroupId}
                         chats={

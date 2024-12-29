@@ -54,7 +54,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     useEffect(() => {
         if (!isPathAllowed(pathname) && isAuthenticated === false) {
-            router.push("user/login");
+            router.push("/user/login");
         }
 
         if (user) {

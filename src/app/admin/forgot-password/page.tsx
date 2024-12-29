@@ -73,7 +73,7 @@ export default function ForgotPassword() {
 
                     <div className="text-center">
                         <Link
-                            href="user/login"
+                            href="/user/login"
                             className="text-sm text-primary hover:text-rose-700"
                         >
                             Giriş sayfasına dön

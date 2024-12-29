@@ -25,17 +25,7 @@ function ChatGroup(
     return (
         <div className="space-y-1 flex flex-col
        p-2 w-full h-full overflow-y-auto">
-            <div
-                onClick={() => onNewChatGroupClick() }
-                className="w-full px-4 justify-start
-                    flex items-center p-2 rounded-md bg-popover cursor-pointer
-                    hover:bg-popover-hover transition-colors duration-200 
-                    hover:bg-slate-100 
-                  "
-            >
-                <PlusCircleIcon className="mr-2 h-4 w-4" />
-                Yeni Chat Grubu
-            </div>
+           
             {chats.slice().reverse().map((chat) => (
                 <div
                     onClick={() => onChatGroupClick(chat.id)}
