@@ -54,14 +54,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     useEffect(() => {
         if (!isPathAllowed(pathname) && isAuthenticated === false) {
-            router.push("/login");
+            router.push("user/login");
         }
 
         if (user) {
             if (
                 !pathname.includes("login")
             ) {
-                router.push("/chat");
+                router.push("/user/chat");
             }
         }
         // TODO: role check

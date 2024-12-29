@@ -79,16 +79,16 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
     if (input.trim()) {
       setIsLoading(true)
       
-
-
-      const aiMessage = await sendAI(input)
-
       // Mesajı ekle
       const newMessage: QuestionGroupDetails = {
         question: input,
         answer: '',
-        groupId: groupId || null,
+        groupId: groupId || 0,
       }
+
+      const aiMessage = await sendAI(input)
+
+     
       setMessages(prev => [...prev, newMessage])
 
       // Streaming başlat

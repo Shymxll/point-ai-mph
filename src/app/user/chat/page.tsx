@@ -1,17 +1,19 @@
 "use client";
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ChatSidebar, useQuestionGroupList } from './_components/side-bar'
 import { AIChat } from './_components/ai-chat'
 import { Navbar } from './_components/nav-bar'
 import { useMutation } from '@tanstack/react-query';
 import questionService from '@/commons/services/QuestionService';
 import { QuestionDetailInsert, QuestionGroupDetails } from '@/commons/models/QuestionModels';
+import { ChangePasswordDialog } from './_components/change-password-dialog';
 
 function Page() {
 
     const [messages, setMessages] = React.useState<QuestionGroupDetails[]>([])
     const [chatGroupId, setChatGroupId] = React.useState<string>('')
+    const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false)
 
     function onChatGroupClick(chatGroupId: string) {
         setChatGroupId(chatGroupId)
@@ -67,6 +69,7 @@ function Page() {
     }
     //TODO:chat group id göndermeyi ekledim
     return (
+        <>
         <SidebarProvider>
             <div className="flex h-screen w-full overflow-hidden">
                 <ChatSidebar 
@@ -75,7 +78,9 @@ function Page() {
                     onChatGroupClick={onChatGroupClick}
                 />
                 <SidebarInset className="h-screen overflow-hidden">
-                    <Navbar />
+                    <Navbar 
+                        onChangePasswordClick={() => setIsPasswordDialogOpen(true)}
+                    />
                     <AIChat 
                         groupId={Number(chatGroupId)}
                         sendMessage={sendMessage}
@@ -83,7 +88,13 @@ function Page() {
                     />
                 </SidebarInset>
             </div>
+           
         </SidebarProvider>
+        <ChangePasswordDialog 
+            open={isPasswordDialogOpen} 
+            onOpenChange={setIsPasswordDialogOpen} 
+        />
+        </>
     )
 }
 

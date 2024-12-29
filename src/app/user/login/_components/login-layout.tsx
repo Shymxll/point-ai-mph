@@ -6,7 +6,7 @@ import { useMutation, useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Shield } from 'lucide-react';
 import { Avatar } from '@radix-ui/react-avatar';
 import { AvatarImage } from '@/components/ui/avatar';
 import generalService from '@/commons/services/GeneralService';
@@ -38,6 +38,7 @@ const LoginLayout = () => {
         }
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [showPassword, setShowPassword] = useState(false)
 
     const locationQuery = useQuery({
         queryKey: ['location'],
@@ -47,7 +48,7 @@ const LoginLayout = () => {
     useEffect(() => {
         const authToken = !tokenService.isAccessTokenExpired();
         if (authToken) {
-            router.push("/login");
+            router.push("/user/login");
         }
     }, [router]);
 
@@ -59,7 +60,7 @@ const LoginLayout = () => {
         onSuccess: (data) => {
             onSetAuthenticated(true);
             onSetUser(data);
-            router.push("/chat");
+            router.push("/user/chat");
         },
         onError: () => {
             showToast("Hatalı giriş, Lütfen tekrar deneyiniz.", 'error');
@@ -76,7 +77,7 @@ const LoginLayout = () => {
             showToast('Lütfen bir lokasyon seçiniz', 'error');
             return;
         }
-        if(!data.username || !data.password){
+        if (!data.username || !data.password) {
             showToast('Kullanıcı adı ve şifre alanlarını doldurunuz', 'error');
             return;
         }
@@ -90,12 +91,16 @@ const LoginLayout = () => {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center bg-white ">
+        <div className="min-h-screen flex items-center justify-center bg-white relative">
+            <div className="absolute top-4 right-4">
+                    <Shield className="h-10 w-10 text-red-600 hover:bg-red-600 rounded-full p-1 bg-opacity-20 hover:bg-opacity-100  hover:text-white cursor-pointer transition-all duration-300" onClick={() => router.push('/admin/login')} />
+            </div>
+
             <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
-                className="bg-white p-8  rounded-lg shadow-2xl w-96 h-[400px] relative overflow-hidden  "
+                className="bg-white p-8  rounded-lg shadow-2xl w-96 h-[420px] relative overflow-hidden  "
             >
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
@@ -169,14 +174,33 @@ const LoginLayout = () => {
                         initial={{ opacity: 0, x: 50 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.9 }}
+                        className="relative"
                     >
                         <Controller
                             name="password"
                             control={control}
                             defaultValue=""
-                            render={({ field }) => <Input type="password" 
-                                
-                            {...field} placeholder="Şifre" className="w-full px-4 py-2 rounded border border-primary focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent" />}
+                            render={({ field }) => (
+                                <div className="relative">
+                                    <Input
+                                        type={showPassword ? "text" : "password"}
+                                        {...field}
+                                        placeholder="Şifre"
+                                        className="w-full px-4 py-2 rounded border border-primary focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent pr-10"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                    >
+                                        {showPassword ? (
+                                            <EyeOff className="h-4 w-4" />
+                                        ) : (
+                                            <Eye className="h-4 w-4" />
+                                        )}
+                                    </button>
+                                </div>
+                            )}
                         />
                         {errors.password && <span>This field is required</span>}
                     </motion.div>
@@ -184,7 +208,7 @@ const LoginLayout = () => {
                         initial={{ opacity: 0, y: 50 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 1 }}
-                        className='flex justify-end flex-col-reverse pt-3'
+                        className='flex justify-end flex-col pt-3'
                     >
                         <Button
                             type="submit"
@@ -199,6 +223,14 @@ const LoginLayout = () => {
                             ) : (
                                 'Giriş Yap'
                             )}
+                        </Button>
+                        <Button
+                            type="button"
+                            variant="link"
+                            className="mb-2 text-sm text-gray-600 hover:text-red-600"
+                            onClick={() => router.push('forgot-password')}
+                        >
+                            Şifremi Unuttum
                         </Button>
                     </motion.div>
                 </form>

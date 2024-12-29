@@ -1,5 +1,7 @@
 export const allowedPaths: (string | RegExp)[] = [
-    "/login",
+    "/user/login",
+    "/user/forgot-password",
+    "/admin/login",
 ];
 
 export const isPathAllowed = (pathname: string) => {

@@ -9,7 +9,7 @@ const Page = () => {
   useEffect(() => {
     const authToken = !tokenService.isAccessTokenExpired();
     if (authToken) {
-      router.push("/chat");
+      router.push("/user/chat");
     }
   }, [router]);
 

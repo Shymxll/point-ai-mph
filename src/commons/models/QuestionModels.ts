@@ -30,11 +30,11 @@ export const SQuestionDetailInsert = z.object({
 export type QuestionDetailInsert = z.infer<typeof SQuestionDetailInsert>;
 
 export const SQuestionGroupDetails = z.object({
-    id: z.number(),
+    id: z.number().optional().nullable(),
     groupId: z.number(),
     question: z.string(),
     answer: z.string(),
-    getValue: z.number(),
+    getValue: z.number().optional().nullable(),
 })
 
 export type QuestionGroupDetails = z.infer<typeof SQuestionGroupDetails>;
