@@ -11,6 +11,7 @@ import openaiService from '@/commons/services/OpenaiService'
 import { OpenaiResponse } from '@/commons/models/OpenaiModels'
 import { useAuth } from '@/context/authContext'
 import Image from 'next/image'
+import React from 'react'
 
 interface AIChatProps {
   groupId: number | undefined | null
@@ -85,6 +86,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
         answer: '',
         groupId: groupId || 0,
       }
+      setInput('')
 
       const aiMessage = await sendAI(input)
 
@@ -106,7 +108,6 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
         userId: auth.user?.userId || '',
       })
 
-      setInput('')
       setIsLoading(false)
       
     }
@@ -148,11 +149,72 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                       pre: ({ ...props }) => (
                         <pre className="bg-gray-800 text-white p-3 rounded-md overflow-auto" {...props} />
                       ),
+                      h1: ({ children, ...props }) => (
+                        <h1 className="text-2xl font-bold py-2" {...props}>
+                          {children}
+                        </h1>
+                      ),
+                      h2: ({ children, ...props }) => (
+                        <h2 className="text-xl font-bold py-2" {...props}>
+                          {children}
+                        </h2>
+                      ),
+                      h3: ({ children, ...props }) => (
+                        <h3 className="text-lg font-bold py-2" {...props}>
+                          {children}
+                        </h3>
+                      ),
+                      h4: ({ children, ...props }) => (
+                        <h4 className="text-base font-bold" {...props}>
+                          {children}
+                        </h4>
+                      ),
+                      h5: ({ children, ...props }) => (
+                        <h5 className="text-sm font-bold" {...props}>
+                          {children}
+                        </h5>
+                      ),
+                      h6: ({ children, ...props }) => (
+                        <h6 className="text-xs font-bold" {...props}>
+                          {children}
+                        </h6>
+                      ),
+                      p: ({ children, ...props }) => (
+                        <p className="text-base" {...props}>
+                          {children}
+                        </p>
+                      ),
+                      strong: ({ children, ...props }) => (
+                        <strong className="font-bold " {...props}>
+                          {children}
+                        </strong>
+                      ),
+                      em: ({ children, ...props }) => (
+                        <em className="italic" {...props}>
+                          {children}
+                        </em>
+                      ),
+                      a: ({ children, ...props }) => (
+                        <a className="text-blue-500" {...props}>
+                          {children}
+                        </a>
+                      ),
+                      
                       code: ({ inline, ...props }) => (
                         inline
                           ? <code className="bg-gray-200 dark:bg-gray-800 px-1 py-1 rounded" {...props} />
                           : <code className="block" {...props} />
                       ),
+                      ol: ({ ordered, children, ...props }) => (
+                        <ol className="list-decimal pl-4 font-bold" {...props}>
+                          {children}
+                        </ol>
+                      ),
+                      li: ({ children, ...props }) => (
+                        <li className="font-base" {...props}>
+                          {children}
+                        </li>
+                      )
                     }}
                     className="prose prose-sm dark:prose-invert text-base"
                   >
