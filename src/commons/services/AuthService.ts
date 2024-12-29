@@ -1,3 +1,4 @@
+import router from "next/router";
 import { UserLogin, parseJwt, User } from "../models/AuthModels";
 import api from "../utils/Api";
 import tokenService, { AuthData } from "./TokenService";
@@ -15,6 +16,8 @@ class AuthService {
 
     async logout() {
         tokenService.clearAuthData();
+        router.push("/user/login");
+        window.location.reload();
     }
 }
 

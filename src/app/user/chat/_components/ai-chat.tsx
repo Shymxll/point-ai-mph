@@ -12,6 +12,7 @@ import { OpenaiResponse } from '@/commons/models/OpenaiModels'
 import { useAuth } from '@/context/authContext'
 import Image from 'next/image'
 import React from 'react'
+import { useToast } from '@/context/ToastContext'
 
 interface AIChatProps {
   groupId: number | undefined | null
@@ -25,6 +26,9 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
   const [isLoading, setIsLoading] = useState(false)
   const [currentStreamingText, setCurrentStreamingText] = useState('')
   const [isStreaming, setIsStreaming] = useState(false)
+  const [isStopped, setIsStopped] = useState(false)
+  const [isSending, setIsSending] = useState(false)
+  const toast = useToast()
   const auth = useAuth()
 
   // Scroll ref tanımlaması
@@ -41,7 +45,6 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
     }
   }, [messages])
 
-  console.log('chatItems:', chatItems)
 
   const sendAI = async (question: string): Promise<string> => {
     return openaiService.sendOpenaiRequest({
@@ -49,29 +52,56 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
       role: 'user',
     }).then((res: OpenaiResponse) => {
       const responseMessage = res.choices[0].message.content
-      console.log('AI response:', responseMessage)
       return responseMessage
     })
   }
 
   const streamText = async (text: string) => {
     setIsStreaming(true)
+    setIsStopped(false)
     let currentText = ''
 
-    for (let i = 0; i < text.length; i += 5) {
-      currentText += text.slice(i, i + 5)
-      setCurrentStreamingText(currentText)
-      
-      // Her güncelleme sonrası scroll
-      if (scrollRef.current) {
-        scrollRef.current.scrollIntoView({ behavior: 'smooth' })
-      }
-      
-      await new Promise(resolve => setTimeout(resolve, 20))
-    }
+    try {
+      for (let i = 0; i < text.length; i += 5) {
+        if (isStopped) {
+          setIsStreaming(false)
+          return currentStreamingText
+        }
+        currentText += text.slice(i, i + 5)
+        setCurrentStreamingText(currentText)
 
+        if (scrollRef.current) {
+          scrollRef.current.scrollIntoView({ behavior: 'smooth' })
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 20))
+      }
+
+      setIsStreaming(false)
+      return text
+    } catch (error) {
+      setIsStreaming(false)
+      return currentStreamingText
+    }
+  }
+
+  const handleStop = () => {
+    setIsStopped(true)
+
+    // Durdurulan metni güncelle ve gönder
+    const stoppedMessage = messages[messages.length - 1]
+    if (stoppedMessage) {
+      stoppedMessage.answer = currentStreamingText
+      setMessages(prev => [...prev.slice(0, -1), stoppedMessage])
+
+      sendMessage({
+        question: stoppedMessage.question,
+        groupId: groupId || null,
+        answer: currentStreamingText,
+        userId: auth.user?.userId || '',
+      })
+    }
     setIsStreaming(false)
-    setCurrentStreamingText('')
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -79,37 +109,39 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
 
     if (input.trim()) {
       setIsLoading(true)
-      
-      // Mesajı ekle
+      const question = input
+      setInput('')
+
       const newMessage: QuestionGroupDetails = {
-        question: input,
+        question,
         answer: '',
         groupId: groupId || 0,
       }
-      setInput('')
-
-      const aiMessage = await sendAI(input)
-
-     
       setMessages(prev => [...prev, newMessage])
 
+      const aiMessage = await sendAI(question)
+
       // Streaming başlat
-      await streamText(aiMessage)
+      const finalText = await streamText(aiMessage)
 
       // Mesajı güncelle
-      newMessage.answer = aiMessage
-
+      newMessage.answer = finalText
       setMessages(prev => [...prev.slice(0, -1), newMessage])
 
-      sendMessage({
-        question: input,
-        groupId: groupId || null,
-        answer: aiMessage,
-        userId: auth.user?.userId || '',
-      })
+      // Sadece durdurulmadıysa API'ye gönder
+      if (!isStopped) {
+        sendMessage({
+          question,
+          groupId: groupId || null,
+          answer: finalText,
+          userId: auth.user?.userId || '',
+        })
+      }
 
       setIsLoading(false)
-      
+      setCurrentStreamingText('')
+      setIsStopped(false)
+      setIsStreaming(false)
     }
   }
 
@@ -135,7 +167,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                 >
                   {message?.question}
                 </div>
-                <Avatar className="w-5 h-5 border rounded-full bg-black" />
+                <Avatar className="w-5 h-5 border rounded-full bg-black hidden sm:block" />
               </div>
             </div>
 
@@ -143,6 +175,21 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
             <div className="flex justify-start mb-4">
               <div className="flex gap-3 items-center flex-row-reverse">
                 <div className="rounded-lg max-w-[600px] bg-muted p-3 text-sm break-words prose prose-sm dark:prose-invert">
+                  <div className="flex justify-end mb-2">
+                    {
+                      !isStreaming && !isStopped && !isSending &&
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(message.answer)
+                          toast.showToast("Kopyalandı!", "success")
+                      }}
+                      disabled={isStreaming || isStopped || isSending}
+                      hidden={isStreaming || isStopped || isSending}
+                      className="text-xs px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 transition-colors duration-200 text-gray-600"
+                    >
+                      Kopyala
+                    </button>}
+                  </div>
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     components={{
@@ -199,7 +246,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                           {children}
                         </a>
                       ),
-                      
+
                       code: ({ inline, ...props }) => (
                         inline
                           ? <code className="bg-gray-200 dark:bg-gray-800 px-1 py-1 rounded" {...props} />
@@ -211,7 +258,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                         </ol>
                       ),
                       li: ({ children, ...props }) => (
-                        <li className="font-base" {...props}>
+                        <li className="font-extralight" {...props}>
                           {children}
                         </li>
                       )
@@ -223,7 +270,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                       : message?.answer || ''}
                   </ReactMarkdown>
                 </div>
-                <Avatar className="w-5 h-5 border rounded-full bg-black" />
+                <Avatar className="w-5 h-5 border rounded-full bg-black hidden sm:block" />
               </div>
             </div>
           </div>

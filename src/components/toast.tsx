@@ -1,6 +1,6 @@
 import React from 'react';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert'; // Kendi alert bileşenlerinizi buraya ekleyin
-import {  TriangleAlert } from 'lucide-react';
+import {  Check, CheckCircle, TriangleAlert } from 'lucide-react';
 
 interface ToastProps {
   message: string;
@@ -13,18 +13,32 @@ const Toast: React.FC<ToastProps> = ({ message, type }) => {
   return (
 
       <Alert
-        className={`absolute bottom-0 right-0 m-4 w-96 rounded-md bg-blur-2xl bg-transparent
-          ${type === 'success' ? 'border-green-500' : 'bg-red-500'}
+        className={`absolute bottom-0 right-0 m-4 w-96 rounded-md bg-blur-2xl bg-transparent z-50
+          ${type === 'success' ? 'border-green-500 bg-green-500' : 'bg-red-500'}
             
             
           `}
-        variant="destructive"
+        variant={type === 'success' ? 'destructive' : 'default'}
+        
 
       >
-        <TriangleAlert className='text-red' 
-            fill='white'
-        />
-        <AlertTitle className='text-white font-bold'>
+        {
+          type === 'success' ? (
+            <CheckCircle className='text-white border-white bg-green-500' 
+            fill='green'
+            size={20}
+            stroke='white'
+            />
+          ) : (
+            <TriangleAlert className='text-red-500 bg-red-500 ' 
+            fill='red'
+            size={20}
+            stroke='white'
+
+            />
+          )
+        }
+        <AlertTitle className='text-white font-bold '>
           {type === 'success' ? 'Başarılı' : 'Hata'}
         </AlertTitle>
         <AlertDescription className='text-white'>

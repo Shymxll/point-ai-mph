@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -13,8 +13,12 @@ import authService from '@/commons/services/AuthService';
 import { useRouter } from 'next/navigation';
 import { useToast } from '@/context/ToastContext';
 import { useAuth } from '@/context/authContext';
+import { convertObjectArrayToOptions } from '@/commons/utils/convertObjectArrayToOptions';
+import Combobox from '@/components/ui/combobox';
+import generalService from '@/commons/services/GeneralService';
 
 interface AdminLoginFormInputs {
+    locationId: { label: string; value: string };
     username: string;
     password: string;
 }
@@ -28,12 +32,17 @@ export default function AdminLoginPage() {
 
     const { handleSubmit, control, formState: { errors } } = useForm<AdminLoginFormInputs>({
         defaultValues: {
+            locationId: { label: '', value: '' },
             username: '',
             password: '',
         }
     });
 
-    
+    const locationQuery = useQuery({
+        queryKey: ['location'],
+        queryFn: generalService.getLocation,
+    });
+
     const onSubmit = async (data: AdminLoginFormInputs) => {
         if (!data.username || !data.password) {
             showToast('Kullanıcı adı ve şifre alanlarını doldurunuz', 'error');
@@ -42,7 +51,7 @@ export default function AdminLoginPage() {
         setIsLoading(true);
         setIsLoading(false);
     };
-    
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-white">
             <div className="absolute top-4 left-4">
@@ -83,8 +92,37 @@ export default function AdminLoginPage() {
                     </motion.h1>
                     Admin Panel
                 </motion.h1>
-
-                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                
+                <form onSubmit={handleSubmit((data) => {
+                    console.log(data)
+                })} className="space-y-4">
+                    <motion.div
+                        initial={{ opacity: 0, x: -50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.8 }}
+                    >
+                        <Controller
+                            name="locationId"
+                            control={control}
+                            defaultValue={{ label: '', value: '' }}
+                            
+                            render={({ field }) => (
+                                <Combobox
+                                    selected={String(field.value.label)}
+                                    options={
+                                        convertObjectArrayToOptions(
+                                            locationQuery.data?.data || [],
+                                            'locationId',
+                                            'locationName'
+                                        )
+                                    }
+                                    onChange={(option) => field.onChange(option)}
+                                    placeholder='Lokasyon Seçiniz'
+                                />
+                            )}
+                        />
+                        {errors.locationId && <span>This field is required</span>}
+                    </motion.div>
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}
@@ -146,6 +184,7 @@ export default function AdminLoginPage() {
                         transition={{ delay: 1 }}
                         className='flex justify-end flex-col pt-3'
                     >
+                        
                         <Button
                             type="submit"
                             className="w-full bg-red-600 text-white py-2 rounded hover:bg-black transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
