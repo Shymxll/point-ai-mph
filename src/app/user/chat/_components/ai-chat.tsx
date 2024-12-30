@@ -13,6 +13,7 @@ import { useAuth } from '@/context/authContext'
 import Image from 'next/image'
 import React from 'react'
 import { useToast } from '@/context/ToastContext'
+import { StopCircleIcon, StopIcon } from '@heroicons/react/24/outline'
 
 interface AIChatProps {
   groupId: number | undefined | null
@@ -33,6 +34,8 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
 
   // Scroll ref tanımlaması
   const scrollRef = useRef<HTMLDivElement | null>(null)
+
+  const [stopSignal, setStopSignal] = useState<AbortController | null>(null);
 
   useEffect(() => {
     setMessages(chatItems)
@@ -57,93 +60,107 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
   }
 
   const streamText = async (text: string) => {
-    setIsStreaming(true)
-    setIsStopped(false)
-    let currentText = ''
+    setIsStreaming(true);
+    setIsStopped(false);
+    let currentText = '';
+
+    // Yeni bir AbortController oluştur
+    const controller = new AbortController();
+    setStopSignal(controller);
 
     try {
       for (let i = 0; i < text.length; i += 5) {
-        if (isStopped) {
-          setIsStreaming(false)
-          return currentStreamingText
+        // AbortController sinyalini kontrol et
+        if (controller.signal.aborted) {
+          setIsStreaming(false);
+          return { text: currentText, stopped: true };
         }
-        currentText += text.slice(i, i + 5)
-        setCurrentStreamingText(currentText)
+
+        currentText += text.slice(i, i + 5);
+        setCurrentStreamingText(currentText);
 
         if (scrollRef.current) {
-          scrollRef.current.scrollIntoView({ behavior: 'smooth' })
+          scrollRef.current.scrollIntoView({ behavior: 'smooth' });
         }
 
-        await new Promise(resolve => setTimeout(resolve, 20))
+        // Gecikme için Promise
+        await new Promise((resolve, reject) => {
+          const timeoutId = setTimeout(resolve, 20);
+          controller.signal.addEventListener('abort', () => {
+            clearTimeout(timeoutId);
+            reject(new Error('Streaming stopped'));
+          });
+        });
       }
 
-      setIsStreaming(false)
-      return text
+      setCurrentStreamingText(text);
+      setIsStreaming(false);
+      return { text, stopped: false };
     } catch (error) {
-      setIsStreaming(false)
-      return currentStreamingText
+      if (error instanceof Error && error.message === 'Streaming stopped') {
+        return { text: currentText, stopped: true };
+      }
+      setIsStreaming(false);
+      return { text: currentText, stopped: true };
+    } finally {
+      setStopSignal(null);
     }
-  }
+  };
 
-  const handleStop = () => {
-    setIsStopped(true)
-
-    // Durdurulan metni güncelle ve gönder
-    const stoppedMessage = messages[messages.length - 1]
-    if (stoppedMessage) {
-      stoppedMessage.answer = currentStreamingText
-      setMessages(prev => [...prev.slice(0, -1), stoppedMessage])
-
-      sendMessage({
-        question: stoppedMessage.question,
-        groupId: groupId || null,
-        answer: currentStreamingText,
-        userId: auth.user?.userId || '',
-      })
+  const handleStop = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
     }
-    setIsStreaming(false)
-  }
+
+    if (!isStreaming || !stopSignal) return;
+
+    stopSignal.abort();
+    setIsStopped(true);
+    setIsStreaming(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+    e.preventDefault();
 
     if (input.trim()) {
-      setIsLoading(true)
-      const question = input
-      setInput('')
+      setIsLoading(true);
+      const question = input;
+      setInput('');
 
       const newMessage: QuestionGroupDetails = {
         question,
         answer: '',
         groupId: groupId || 0,
-      }
-      setMessages(prev => [...prev, newMessage])
+      };
+      setMessages(prev => [...prev, newMessage]);
 
-      const aiMessage = await sendAI(question)
+      try {
+        const aiMessage = await sendAI(question);
+        const { text: finalText, stopped } = await streamText(aiMessage);
 
-      // Streaming başlat
-      const finalText = await streamText(aiMessage)
+        // Mesajı güncelle
+        newMessage.answer = finalText;
+        setMessages(prev => [...prev.slice(0, -1), newMessage]);
 
-      // Mesajı güncelle
-      newMessage.answer = finalText
-      setMessages(prev => [...prev.slice(0, -1), newMessage])
-
-      // Sadece durdurulmadıysa API'ye gönder
-      if (!isStopped) {
+        // Mesajı gönder
         sendMessage({
           question,
           groupId: groupId || null,
           answer: finalText,
           userId: auth.user?.userId || '',
-        })
+        });
+      } catch (error) {
+        toast.showToast("Bir hata oluştu", 'error');
+      } finally {
+        setIsLoading(false);
+        setCurrentStreamingText('');
+        setIsStopped(false);
+        setIsStreaming(false);
+        setStopSignal(null);
       }
-
-      setIsLoading(false)
-      setCurrentStreamingText('')
-      setIsStopped(false)
-      setIsStreaming(false)
     }
-  }
+  };
 
   return (
     <div className="flex h-screen flex-col w-full justify-center overflow-hidden relative">
@@ -182,13 +199,13 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                         onClick={() => {
                           navigator.clipboard.writeText(message.answer)
                           toast.showToast("Kopyalandı!", "success")
-                      }}
-                      disabled={isStreaming || isStopped || isSending}
-                      hidden={isStreaming || isStopped || isSending}
-                      className="text-xs px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 transition-colors duration-200 text-gray-600"
-                    >
-                      Kopyala
-                    </button>}
+                        }}
+                        disabled={isStreaming || isStopped || isSending}
+                        hidden={isStreaming || isStopped || isSending}
+                        className="text-xs px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 transition-colors duration-200 text-gray-600"
+                      >
+                        Kopyala
+                      </button>}
                   </div>
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
@@ -280,13 +297,21 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
       </div>
 
       <div className="border-t p-4 bg-primary relative z-10">
-        <form onSubmit={handleSubmit} className="justify-center flex space-x-2">
+        <form onSubmit={handleSubmit} className="justify-center flex space-x-2 relative">
+          
+          <StopCircleIcon 
+            className={`h-9 w-9 text-end text-white hover:text-primary hover:bg-white hover:rounded-md text-primary cursor-pointer justify-end ${!isStreaming && 'opacity-50 cursor-not-allowed'}`}
+            onClick={isStreaming ? handleStop : undefined}
+          />
           <Input
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Mesajınızı yazın..."
-            className="lg:max-w-[calc(100%-440px)] sm:max-w-full flex-1 text-base bg-white"
+            className="lg:max-w-[calc(100%-440px)] sm:max-w-full flex-1 text-base bg-white "
           />
+          
+          
+          
           <Button
             type="submit"
             disabled={isLoading}
