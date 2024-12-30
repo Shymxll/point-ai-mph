@@ -16,6 +16,7 @@ import { useAuth } from '@/context/authContext';
 import { convertObjectArrayToOptions } from '@/commons/utils/convertObjectArrayToOptions';
 import Combobox from '@/components/ui/combobox';
 import generalService from '@/commons/services/GeneralService';
+import { UserLogin } from '@/commons/models/AuthModels';
 
 interface AdminLoginFormInputs {
     locationId: { label: string; value: string };
@@ -43,11 +44,29 @@ export default function AdminLoginPage() {
         queryFn: generalService.getLocation,
     });
 
+    const loginUserMutation = useMutation({
+        mutationKey: ["user-login"],
+        mutationFn: (data: UserLogin) => authService.userLogin(data),
+        onSuccess: (data) => {
+            onSetAuthenticated(true);
+            onSetUser(data);
+            router.push("/admin/dashboard/playground");
+        },
+        onError: () => {
+            showToast("Hatalı giriş, Lütfen tekrar deneyiniz.", 'error');
+        }
+    });
+
     const onSubmit = async (data: AdminLoginFormInputs) => {
         if (!data.username || !data.password) {
             showToast('Kullanıcı adı ve şifre alanlarını doldurunuz', 'error');
             return;
         }
+        loginUserMutation.mutate({
+            username: data.username,
+            password: data.password,
+            locationId: data.locationId.value
+        });
         setIsLoading(true);
         setIsLoading(false);
     };
@@ -93,9 +112,7 @@ export default function AdminLoginPage() {
                     Admin Panel
                 </motion.h1>
                 
-                <form onSubmit={handleSubmit((data) => {
-                    console.log(data)
-                })} className="space-y-4">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
                     <motion.div
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}
