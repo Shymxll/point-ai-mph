@@ -108,6 +108,10 @@ export class QuestionService {
         BannedName STRING
     */
 
+    public async getBannedList(): Promise<unknown> {
+        return await api.get(`banned/banned-get-list`);
+    }
+
     
 
 

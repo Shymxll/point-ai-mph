@@ -14,6 +14,8 @@ import Image from 'next/image'
 import React from 'react'
 import { useToast } from '@/context/ToastContext'
 import { StopCircleIcon, StopIcon } from '@heroicons/react/24/outline'
+import useUserPromptGetList from '../libs/hooks/useUserPromptGetList'
+import useUserBannedGetList from '../libs/hooks/useUserBannedGetList'
 
 interface AIChatProps {
   groupId: number | undefined | null
@@ -32,6 +34,10 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
   const toast = useToast()
   const auth = useAuth()
 
+  const { data, isLoading: promptLoading, error } = useUserPromptGetList();
+  console.log("Prompt Data:", data);
+  const { data: bannedData, isLoading: bannedLoading, error: bannedError } = useUserBannedGetList();
+  console.log("Banned Data:", bannedData);
   // Scroll ref tanımlaması
   const scrollRef = useRef<HTMLDivElement | null>(null)
 

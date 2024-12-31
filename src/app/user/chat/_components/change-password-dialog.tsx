@@ -39,7 +39,6 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
     const onSubmit = async (data: ChangePasswordFormValues) => {
         try {
             // TODO: Implement password change logic
-            console.log(data)
             onOpenChange(false)
             form.reset()
         } catch (error) {

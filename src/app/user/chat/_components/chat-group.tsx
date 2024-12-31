@@ -21,7 +21,6 @@ function ChatGroup(
 
     }: ChatGroupProps
 ) {
-    console.log('chats:', currenChatGroupId)
     return (
         <div className="space-y-1 flex flex-col
        p-2 w-full h-full overflow-y-auto">

@@ -38,7 +38,6 @@ function Page() {
         mutationKey: ['insert-question-detail'],
         mutationFn: (data: QuestionDetailInsert) => questionService.insertQuestionDetail(data),
         onSuccess: (data,variables) => {
-            console.log("Data:",data)
             setMessages([...messages, {
                 id: 1,
                 groupId: variables.groupId || 0,
@@ -46,12 +45,10 @@ function Page() {
                 answer: variables.answer,
                 getValue: 1
             }])
-            console.log("Data:",data)
             setChatGroupId(data.data.groupId)
             questionGroupList.refetch()
         },
     })
-    console.log("GroupID:",chatGroupId)
     const sendMessage = (data: QuestionDetailInsert) => {
         insertQuestionDetailMutation.mutate(data)
     }
