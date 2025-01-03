@@ -25,6 +25,8 @@ import { useUserChangeUserPassword } from "../libs/hooks/useUserChangeUserPasswo
 import { useAuth } from "@/context/authContext"
 import React, { useEffect } from "react"
 import { useToast } from "@/context/ToastContext"
+import authService from "@/commons/services/AuthService"
+import { useRouter } from "next/navigation"
 
 interface ChangePasswordDialogProps {
     open: boolean
@@ -34,7 +36,7 @@ interface ChangePasswordDialogProps {
 export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialogProps) {
     const auth = useAuth()
     const { showToast } = useToast()
-
+    const router = useRouter()
     
 
     const form = useForm<ChangeUserPassword>({
@@ -58,6 +60,8 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
             form.reset()
             showToast("Şifre değiştirildi!", "success")
             onOpenChange(false)
+            authService.logout()
+            router.push('/user/login')
         },
         (error) => {
             showToast("Başarısız işlem!", "error")            

@@ -1,3 +1,4 @@
+import { BannedMainManager, BannedMainManagerListResponse } from "../models/BannedModels";
 import { QuestionDetailInsert, QuestionGroupDetailsResponse, QuestionGroupResponse } from "../models/QuestionModels";
 import api from "../utils/Api";
 
@@ -108,7 +109,7 @@ export class QuestionService {
         BannedName STRING
     */
 
-    public async getBannedList(): Promise<unknown> {
+    public async getBannedList(): Promise<BannedMainManagerListResponse> {
         return await api.get(`banned/banned-get-list`);
     }
 

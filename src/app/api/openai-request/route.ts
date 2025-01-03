@@ -1,25 +1,20 @@
 import { OpenaiRequest } from '@/commons/models/OpenaiModels';
 import { NextRequest, NextResponse } from 'next/server';
 import { OpenAI } from 'openai';
+import { ChatCompletionMessageParam } from 'openai/resources/chat/completions.mjs';
 
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 })
 export async function POST(req: NextRequest) {
-    const data: OpenaiRequest = await req.json();
+    const data: OpenaiRequest[] = await req.json();
     try {
         const response = await openai.chat.completions.create({
             model: 'gpt-4o-mini-2024-07-18',
-            messages: [
-                {
-                    role: 'system',
-                    content: 'You are a helpful assistant.',
-                },
-                {
-                    role: 'user',
-                    content: data.content,
-                },
-            ],
+            messages: data.map((item: OpenaiRequest) => ({
+                role: item.role,
+                content: item.content
+            })) as ChatCompletionMessageParam[]
         });
 
         return NextResponse.json(response);

@@ -1,7 +1,7 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { Home, Triangle } from 'lucide-react'
+import { Home, StopCircle, Triangle } from 'lucide-react'
 import { SquareTerminal, Bot, Code2, Book, Settings2, LifeBuoy, SquareUser } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -31,6 +31,11 @@ export default function SideBar() {
             icon: <Settings2 className="size-5" />,
             label: "Settings",
             path: "/admin/dashboard/settings"
+        },
+        {
+            icon: <StopCircle className="size-5" />,
+            label: "Yasaklı ",
+            path: "/admin/dashboard/banned"
         }
     ]
 

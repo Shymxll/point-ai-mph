@@ -58,7 +58,7 @@ class AuthService {
    */
    async forgetPassword(mail: string): Promise<unknown> {
         const response = await api.post<unknown>(`/user/forget-password/${mail}`);
-        return response.data;
+        return response;
    }
 }
 

@@ -16,6 +16,7 @@ import { useToast } from '@/context/ToastContext'
 import { StopCircleIcon, StopIcon } from '@heroicons/react/24/outline'
 import useUserPromptGetList from '../libs/hooks/useUserPromptGetList'
 import useUserBannedGetList from '../libs/hooks/useUserBannedGetList'
+import { BannedMainManager } from '@/commons/models/BannedModels'
 
 interface AIChatProps {
   groupId: number | undefined | null
@@ -56,10 +57,15 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
 
 
   const sendAI = async (question: string): Promise<string> => {
-    return openaiService.sendOpenaiRequest({
+    return openaiService.sendOpenaiRequest(
+      [{
+        role: 'system',
+        content: bannedData?.data.map((banned: BannedMainManager) => banned.bannedName).join('\n') || ''
+      },
+        {
       content: question,
       role: 'user',
-    }).then((res: OpenaiResponse) => {
+    }]).then((res: OpenaiResponse) => {
       const responseMessage = res.choices[0].message.content
       return responseMessage
     })

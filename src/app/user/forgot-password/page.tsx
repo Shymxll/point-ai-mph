@@ -7,16 +7,19 @@ import Image from 'next/image'
 import Link from 'next/link'
 import useUserForgetPassword from './lib/hooks/useUserForgetPassword'
 import { useToast } from '@/context/ToastContext'
-
+import { useRouter } from 'next/navigation'
 export default function ForgotPassword() {
     const [email, setEmail] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [message, setMessage] = useState('')
     const { showToast } = useToast()
+    const router = useRouter()
 
     const forgetPasswordMutation = useUserForgetPassword(
         () => {
             showToast("Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.", "success")
+            router.push('/user/login')
+            setEmail('')
         },
         (error: string) => {
             showToast("Bir hata oluştu. Lütfen tekrar deneyin.", "error")

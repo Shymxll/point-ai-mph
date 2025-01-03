@@ -13,7 +13,7 @@ const Toast: React.FC<ToastProps> = ({ message, type }) => {
   return (
 
       <Alert
-        className={`absolute bottom-0 right-0 m-4 w-96 rounded-md bg-blur-2xl bg-transparent z-50
+        className={`absolute  bottom-1 right-1 m-4 w-96 rounded-md bg-blur-2xl bg-transparent z-50
           ${type === 'success' ? 'border-green-500 bg-green-500' : 'bg-red-500'}
             
             
