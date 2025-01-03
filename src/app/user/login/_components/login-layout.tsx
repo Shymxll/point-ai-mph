@@ -21,6 +21,7 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { useMutation, useQuery } from '@tanstack/react-query'
+import Link from 'next/link';
 
 const formSchema = z.object({
     username: z.string().min(3, { message: "Kullanıcı adı en az 3 karakter olmalıdır" }),
@@ -219,7 +220,7 @@ const LoginLayout = () => {
                             initial={{ opacity: 0, y: 50 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 1 }}
-                            className='flex justify-end flex-col pt-3'
+                            className='flex justify-center items-center flex-col pt-3 gap-5'
                         >
                             <Button
                                 type="submit"
@@ -235,6 +236,12 @@ const LoginLayout = () => {
                                     'Giriş Yap'
                                 )}
                             </Button>
+                            <Link
+                                href="/user/forgot-password"
+                                className="text-sm text-primary hover:text-rose-700"
+                            >
+                                Şifremi unuttum
+                            </Link>
                         </motion.div>
                     </form>
                 </Form>

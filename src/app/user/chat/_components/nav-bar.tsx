@@ -42,7 +42,6 @@ export function Navbar({ onChangePasswordClick }: NavbarProps) {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            {/* TODO: Şifremi unuttum sayfası eklenecek 
                             <DropdownMenuItem
                                 className="flex items-center pl-4 cursor-pointer"
                                 onClick={onChangePasswordClick}
@@ -50,7 +49,6 @@ export function Navbar({ onChangePasswordClick }: NavbarProps) {
                                 <Lock className="mr-2 h-4 w-4" />
                                 <span>Şifremi Değiştir</span>
                             </DropdownMenuItem>
-                            */}
                             <DropdownMenuItem
                                 className="flex items-center pl-4 cursor-pointer"
                                 onClick={() => {

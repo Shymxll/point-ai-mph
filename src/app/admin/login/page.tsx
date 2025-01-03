@@ -17,6 +17,7 @@ import { convertObjectArrayToOptions } from '@/commons/utils/convertObjectArrayT
 import Combobox from '@/components/ui/combobox';
 import generalService from '@/commons/services/GeneralService';
 import { UserLogin } from '@/commons/models/AuthModels';
+import useAdminLogin from './lib/hooks/useAdminLogin';
 
 interface AdminLoginFormInputs {
     locationId: { label: string; value: string };
@@ -44,25 +45,15 @@ export default function AdminLoginPage() {
         queryFn: generalService.getLocation,
     });
 
-    const loginUserMutation = useMutation({
-        mutationKey: ["user-login"],
-        mutationFn: (data: UserLogin) => authService.userLogin(data),
-        onSuccess: (data) => {
-            onSetAuthenticated(true);
-            onSetUser(data);
-            router.push("/admin/dashboard/playground");
-        },
-        onError: () => {
-            showToast("Hatalı giriş, Lütfen tekrar deneyiniz.", 'error');
-        }
-    });
+    const adminLoginMutation = useAdminLogin();
+
 
     const onSubmit = async (data: AdminLoginFormInputs) => {
         if (!data.username || !data.password) {
             showToast('Kullanıcı adı ve şifre alanlarını doldurunuz', 'error');
             return;
         }
-        loginUserMutation.mutate({
+        adminLoginMutation.mutate({
             username: data.username,
             password: data.password,
             locationId: data.locationId.value

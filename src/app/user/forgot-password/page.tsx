@@ -5,25 +5,27 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Image from 'next/image'
 import Link from 'next/link'
+import useUserForgetPassword from './lib/hooks/useUserForgetPassword'
+import { useToast } from '@/context/ToastContext'
 
 export default function ForgotPassword() {
     const [email, setEmail] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [message, setMessage] = useState('')
+    const { showToast } = useToast()
+
+    const forgetPasswordMutation = useUserForgetPassword(
+        () => {
+            showToast("Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.", "success")
+        },
+        (error: string) => {
+            showToast("Bir hata oluştu. Lütfen tekrar deneyin.", "error")
+        }
+    )
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setIsLoading(true)
-        setMessage('')
-
-        try {
-            // TODO: Implement password reset logic
-            setMessage('Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.')
-        } catch {
-            setMessage('Bir hata oluştu. Lütfen tekrar deneyin.')
-        } finally {
-            setIsLoading(false)
-        }
+        forgetPasswordMutation.mutate(email)
     }
 
     return (

@@ -9,6 +9,21 @@ export const SUserLogin = z.object({
 
 export type UserLogin = z.infer<typeof SUserLogin>
 
+export const SChangeUserPassword = z.object({
+    userId: z.string(),
+    oldPassword: z.string()
+        .min(6, "Şifre en az 6 karakter olmalıdır"),
+    newPassword: z.string()
+        .min(6, "Yeni şifre en az 6 karakter olmalıdır")
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Şifre en az bir büyük harf, bir küçük harf ve bir rakam içermelidir"),
+    duplicateNewPassword: z.string()
+}).refine((data) => data.newPassword === data.duplicateNewPassword, {
+    message: "Şifreler eşleşmiyor", 
+    path: ["duplicateNewPassword"],
+})
+
+export type ChangeUserPassword = z.infer<typeof SChangeUserPassword>
+
 const SUser = z
     .object({
         "http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier":

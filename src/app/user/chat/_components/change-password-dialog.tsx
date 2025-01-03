@@ -20,6 +20,11 @@ import { Input } from "@/components/ui/input"
 import { changePasswordSchema, type ChangePasswordFormValues } from "@/commons/models/PasswordModels"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
+import { ChangeUserPassword, SChangeUserPassword } from "@/commons/models/AuthModels"
+import { useUserChangeUserPassword } from "../libs/hooks/useUserChangeUserPassword"
+import { useAuth } from "@/context/authContext"
+import React, { useEffect } from "react"
+import { useToast } from "@/context/ToastContext"
 
 interface ChangePasswordDialogProps {
     open: boolean
@@ -27,20 +32,44 @@ interface ChangePasswordDialogProps {
 }
 
 export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialogProps) {
-    const form = useForm<ChangePasswordFormValues>({
-        resolver: zodResolver(changePasswordSchema),
+    const auth = useAuth()
+    const { showToast } = useToast()
+
+    
+
+    const form = useForm<ChangeUserPassword>({
+        resolver: zodResolver(SChangeUserPassword),
         defaultValues: {
-            currentPassword: "",
+            userId: auth.user?.userId,
+            oldPassword: "",
             newPassword: "",
-            confirmPassword: "",
+            duplicateNewPassword: "",
         },
     })
 
-    const onSubmit = async (data: ChangePasswordFormValues) => {
-        try {
-            // TODO: Implement password change logic
-            onOpenChange(false)
+    useEffect(() => {
+        if (auth.user) {
+            form.setValue("userId", auth.user.userId)
+        }
+    }, [auth.user])
+
+    const changePasswordMutation = useUserChangeUserPassword(
+        () => {
             form.reset()
+            showToast("Şifre değiştirildi!", "success")
+            onOpenChange(false)
+        },
+        (error) => {
+            showToast("Başarısız işlem!", "error")            
+        }
+    )
+
+    
+
+    const onSubmit = async (data: ChangeUserPassword) => {
+        try {
+            console.log(data)
+            changePasswordMutation.mutate(data)
         } catch (error) {
             console.error('Password change failed:', error)
         }
@@ -58,7 +87,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <FormField
                             control={form.control}
-                            name="currentPassword"
+                            name="oldPassword"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Mevcut Şifre</FormLabel>
@@ -84,7 +113,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
                         />
                         <FormField
                             control={form.control}
-                            name="confirmPassword"
+                            name="duplicateNewPassword"
                             render={({ field }) => (
                                 <FormItem>
                                     <FormLabel>Yeni Şifre (Tekrar)</FormLabel>
