@@ -15,7 +15,6 @@ import bannedService from '@/commons/services/BannedService'
 import useAdminBannedGetList from '../lib/hooks/useAdminBannedGetList'
 
 export default function BannedContent() {
-    const { showToast } = useToast()
     const { data: bannedPrompts, isLoading, refetch } = useAdminBannedGetList()
     const [searchTerm, setSearchTerm] = React.useState('')
 

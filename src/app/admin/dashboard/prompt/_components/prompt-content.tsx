@@ -20,7 +20,6 @@ interface PromptMainManager {
 }
 
 export default function PromptContent() {
-    const { showToast } = useToast()
     const { data: prompts, isLoading, refetch } = useAdminPromptGetList()
     const [searchTerm, setSearchTerm] = React.useState('')
 

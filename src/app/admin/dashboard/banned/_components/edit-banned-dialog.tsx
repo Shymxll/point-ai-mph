@@ -14,6 +14,7 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import useAdminBannedGetById from '../lib/hooks/useAdminBannedGetById'
 import useAdminBannedUpdate from '../lib/hooks/useAdminbannedUpdate'
+import { toast } from 'sonner'
 
 interface EditBannedDialogProps {
     bannedId: number;
@@ -25,7 +26,6 @@ interface EditBannedDialogProps {
 export function EditBannedDialog({ bannedId, bannedName, bannedState, onSuccess }: EditBannedDialogProps) {
     const [isOpen, setIsOpen] = useState(false)
     const [isLoading, setIsLoading] = useState(false)
-    const { showToast } = useToast()
 
     const getBannedById = useAdminBannedGetById(bannedId)
 
@@ -38,12 +38,12 @@ export function EditBannedDialog({ bannedId, bannedName, bannedState, onSuccess 
 
     const updateMutation = useAdminBannedUpdate(
         () => {
-            showToast("Yasaklı prompt başarıyla güncellendi.", "success")
+            toast.success("Yasaklı prompt başarıyla güncellendi.")
             setIsOpen(false)
             onSuccess()
         },
         (error: string) => {
-            showToast(error, "error")
+            toast.error("Yasaklı prompt güncellenirken bir hata oluştu.")
         }
     )
 

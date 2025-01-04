@@ -22,6 +22,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { useMutation, useQuery } from '@tanstack/react-query'
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
     username: z.string().min(3, { message: "Kullanıcı adı en az 3 karakter olmalıdır" }),
@@ -31,7 +32,6 @@ const formSchema = z.object({
 
 const LoginLayout = () => {
     const router = useRouter()
-    const { showToast } = useToast();
     const { onSetAuthenticated, onSetUser } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false)
@@ -63,16 +63,17 @@ const LoginLayout = () => {
         onSuccess: (data) => {
             onSetAuthenticated(true);
             onSetUser(data);
+            toast.success("Giriş başarılı!");
             router.push("/user/chat");
         },
         onError: () => {
-            showToast("Hatalı giriş, Lütfen tekrar deneyiniz.", 'error');
+            toast.error("Hatalı giriş, Lütfen tekrar deneyiniz.");
         }
     });
 
     const onSubmit = async (data: z.infer<typeof formSchema>) => {
         if (!data.location.value) {
-            showToast('Lütfen bir lokasyon seçiniz', 'error');
+            toast.error('Lütfen bir lokasyon seçiniz');
             return;
         }
         setIsLoading(true);
@@ -236,12 +237,12 @@ const LoginLayout = () => {
                                     'Giriş Yap'
                                 )}
                             </Button>
-                            <Link
-                                href="/user/forgot-password"
-                                className="text-sm text-primary hover:text-rose-700"
+                            <p
+                                onClick={() => router.push('/user/forgot-password')}
+                                className="text-sm text-primary hover:text-rose-700 cursor-pointer"
                             >
                                 Şifremi unuttum
-                            </Link>
+                            </p>
                         </motion.div>
                     </form>
                 </Form>

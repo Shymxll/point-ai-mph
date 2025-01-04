@@ -17,6 +17,7 @@ import { StopCircleIcon, StopIcon } from '@heroicons/react/24/outline'
 import useUserPromptGetList from '../libs/hooks/useUserPromptGetList'
 import useUserBannedGetList from '../libs/hooks/useUserBannedGetList'
 import { BannedMainManager } from '@/commons/models/BannedModels'
+import { toast } from 'sonner'
 
 interface AIChatProps {
   groupId: number | undefined | null
@@ -32,7 +33,6 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
   const [isStreaming, setIsStreaming] = useState(false)
   const [isStopped, setIsStopped] = useState(false)
   const [isSending, setIsSending] = useState(false)
-  const toast = useToast()
   const auth = useAuth()
 
   const { data, isLoading: promptLoading, error } = useUserPromptGetList();
@@ -163,7 +163,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
           userId: auth.user?.userId || '',
         });
       } catch (error) {
-        toast.showToast("Bir hata oluştu", 'error');
+        toast.error("Bir hata oluştu");
       } finally {
         setIsLoading(false);
         setCurrentStreamingText('');
@@ -210,7 +210,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                       <button
                         onClick={() => {
                           navigator.clipboard.writeText(message.answer)
-                          toast.showToast("Kopyalandı!", "success")
+                          toast.success("Kopyalandı!")
                         }}
                         disabled={isStreaming || isStopped || isSending}
                         hidden={isStreaming || isStopped || isSending}

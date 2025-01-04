@@ -26,7 +26,6 @@ interface NewPromptDialogProps {
 
 export function NewPromptDialog({ onSuccess }: NewPromptDialogProps) {
     const [isOpen, setIsOpen] = useState(false)
-    const { showToast } = useToast()
 
     const form = useForm<PromptInsert>({
         resolver: zodResolver(SPromptInsert),

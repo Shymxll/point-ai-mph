@@ -18,6 +18,7 @@ import Combobox from '@/components/ui/combobox';
 import generalService from '@/commons/services/GeneralService';
 import { UserLogin } from '@/commons/models/AuthModels';
 import useAdminLogin from './lib/hooks/useAdminLogin';
+import { toast } from 'sonner';
 
 interface AdminLoginFormInputs {
     locationId: { label: string; value: string };
@@ -27,7 +28,6 @@ interface AdminLoginFormInputs {
 
 export default function AdminLoginPage() {
     const router = useRouter()
-    const { showToast } = useToast();
     const { onSetAuthenticated, onSetUser } = useAuth();
     const [showPassword, setShowPassword] = useState(false)
     const [isLoading, setIsLoading] = useState(false);
@@ -50,7 +50,7 @@ export default function AdminLoginPage() {
 
     const onSubmit = async (data: AdminLoginFormInputs) => {
         if (!data.username || !data.password) {
-            showToast('Kullanıcı adı ve şifre alanlarını doldurunuz', 'error');
+            toast.error('Kullanıcı adı ve şifre alanlarını doldurunuz');
             return;
         }
         adminLoginMutation.mutate({

@@ -25,6 +25,7 @@ import { BannedMainManager } from "@/commons/models/BannedModels"
 import { Switch } from "@/components/ui/switch"
 import { useAdminBannedInsert } from "../lib/hooks/useAdminBannedInsert"
 import { DialogOverlay } from "@radix-ui/react-dialog"
+import { toast } from "sonner"
 
 
 
@@ -34,7 +35,6 @@ interface NewBannedDialogProps {
 
 export function NewBannedDialog({ onSuccess }: NewBannedDialogProps) {
     const [isOpen, setIsOpen] = useState(false)
-    const { showToast } = useToast()
 
     const form = useForm<BannedMainManager>({
         defaultValues: {
@@ -44,13 +44,13 @@ export function NewBannedDialog({ onSuccess }: NewBannedDialogProps) {
 
     const addMutation = useAdminBannedInsert(
         () => {
-            showToast("Yasaklı prompt başarıyla eklendi", "success")
+            toast.success("Yasaklı prompt başarıyla eklendi")
             form.reset()
             setIsOpen(false)
             onSuccess()
         },
         () => {
-            showToast("Yasaklı prompt eklenirken bir hata oluştu", "error")
+            toast.error("Yasaklı prompt eklenirken bir hata oluştu")
         }
     )
 

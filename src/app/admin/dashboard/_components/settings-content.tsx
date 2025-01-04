@@ -8,9 +8,9 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useState } from "react"
 import { useToast } from "@/context/ToastContext"
+import { toast } from "sonner"
 
 export default function SettingsContent() {
-    const { showToast } = useToast()
     const [isLoading, setIsLoading] = useState(false)
 
     const handleSave = () => {
@@ -18,7 +18,7 @@ export default function SettingsContent() {
         // Burada ayarları kaydetme işlemi yapılacak
         setTimeout(() => {
             setIsLoading(false)
-            showToast("Ayarlar başarıyla kaydedildi", "success")
+            toast.success("Ayarlar başarıyla kaydedildi")
         }, 1000)
     }
 
