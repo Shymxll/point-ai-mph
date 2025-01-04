@@ -14,6 +14,7 @@ export default function DashboardLayout({
             <div className="grid h-screen w-full pl-[56px]">
                 <SideBar />
                 <div className="flex flex-col">
+                    
                     <NavBar />
                     {children}
                 </div>

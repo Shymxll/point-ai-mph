@@ -1,11 +1,12 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { Home, StopCircle, Triangle } from 'lucide-react'
+import { Home, LogOut, StopCircle, Triangle } from 'lucide-react'
 import { SquareTerminal, Bot, Code2, Book, Settings2, LifeBuoy, SquareUser } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
+import ProfilDropDownMenu from './profil-drop-down-menu'
 
 export default function SideBar() {
     const router = useRouter()
@@ -14,40 +15,45 @@ export default function SideBar() {
     const menuItems = [
         {
             icon: <Home className="size-5" />,
-            label: "Dashboard",
+            label: "Ana Sayfa",
             path: "/admin/dashboard"
         },
         {
             icon: <SquareTerminal className="size-5" />,
-            label: "Playground",
+            label: "Oyun Alanı",
             path: "/admin/dashboard/playground"
         },
         {
             icon: <Book className="size-5" />,
-            label: "Documentation",
+            label: "Dokümantasyon",
             path: "/admin/dashboard/docs"
         },
         {
             icon: <Settings2 className="size-5" />,
-            label: "Settings",
+            label: "Ayarlar",
             path: "/admin/dashboard/settings"
         },
         {
             icon: <StopCircle className="size-5" />,
-            label: "Yasaklı ",
+            label: "Yasaklı",
             path: "/admin/dashboard/banned"
+        },
+        {
+            icon: <Code2 className="size-5" />,
+            label: "Komut",
+            path: "/admin/dashboard/prompt"
         }
     ]
 
     const bottomMenuItems = [
         {
             icon: <LifeBuoy className="size-5" />,
-            label: "Help",
+            label: "Yardım",
             path: "/admin/dashboard/help"
         },
         {
             icon: <SquareUser className="size-5" />,
-            label: "Account",
+            label: "Profil",
             path: "/admin/dashboard/account"
         }
     ]
@@ -85,24 +91,14 @@ export default function SideBar() {
                 ))}
             </nav>
             <nav className="mt-auto grid gap-1 p-2">
-                {bottomMenuItems.map((item, index) => (
-                    <Tooltip key={index}>
-                        <TooltipTrigger asChild>
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                className={`mt-auto rounded-lg ${pathname === item.path ? 'bg-muted' : ''}`}
-                                aria-label={item.label}
-                                onClick={() => router.push(item.path)}
-                            >
-                                {item.icon}
-                            </Button>
-                        </TooltipTrigger>
-                        <TooltipContent side="right" sideOffset={5}>
-                            {item.label}
-                        </TooltipContent>
-                    </Tooltip>
-                ))}
+                <Tooltip>
+                    <TooltipTrigger asChild>
+                        <ProfilDropDownMenu />
+                    </TooltipTrigger>
+                    <TooltipContent side="right" sideOffset={5}>
+                        Profil
+                    </TooltipContent>
+                </Tooltip>
             </nav>
         </aside>
     )

@@ -4,6 +4,7 @@ import "./globals.css";
 import TanstackProvider from "@/components/providers/tan-stack-provider";
 import { AuthProvider } from "@/context/authContext";
 import { ToastProvider } from "@/context/ToastContext";
+import { Toaster, toast } from 'sonner'
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,7 @@ export default function RootLayout({
         <AuthProvider>
           <TanstackProvider>
             <ToastProvider>
+              <Toaster richColors expand={false} />
               {children}
             </ToastProvider>
           </TanstackProvider>
