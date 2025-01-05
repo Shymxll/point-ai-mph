@@ -59,7 +59,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         if (user) {
             if (
-                !pathname.includes("login") && !pathname.includes("admin")
+                !pathname.includes("login") &&
+                !pathname.includes("admin") &&
+                !pathname.includes("forgot-password")
             ) {
                 router.push("/user/chat");
             }
