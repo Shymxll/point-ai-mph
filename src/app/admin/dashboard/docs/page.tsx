@@ -6,18 +6,18 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 export default function DocumentationPage() {
     return (
         <main className="flex-1 overflow-y-hidden p-6">
-            <h2 className="text-2xl font-bold mb-6">Documentation</h2>
+            <h2 className="text-2xl font-bold mb-6">Dokümantasyon</h2>
 
             <Tabs defaultValue="system-prompts" className="space-y-4">
                 <TabsList>
-                    <TabsTrigger value="system-prompts">System Prompts</TabsTrigger>
-                    <TabsTrigger value="prompt-engineering">Prompt Engineering</TabsTrigger>
+                    <TabsTrigger value="system-prompts">Sistem Prompts</TabsTrigger>
+                    <TabsTrigger value="prompt-engineering">Prompt Mühendisliği</TabsTrigger>
                 </TabsList>
 
                 <TabsContent value="system-prompts" className="space-y-4">
                     <Card>
                         <CardHeader>
-                            <CardTitle>System Prompts Nedir?</CardTitle>
+                            <CardTitle>Sistem Prompts Nedir?</CardTitle>
                             <CardDescription>
                                 AI asistanın davranışını ve rolünü belirleyen temel yönergeler
                             </CardDescription>

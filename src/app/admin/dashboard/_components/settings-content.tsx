@@ -25,7 +25,7 @@ export default function SettingsContent() {
     return (
         <main className="flex-1 overflow-auto p-6">
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">Settings</h2>
+                <h2 className="text-2xl font-bold">Ayarlar</h2>
                 <Button
                     onClick={handleSave}
                     disabled={isLoading}
@@ -79,7 +79,7 @@ export default function SettingsContent() {
                     <CardContent className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
                             <div className="space-y-2">
-                                <Label htmlFor="temperature">Temperature</Label>
+                                <Label htmlFor="temperature">Sıcaklık</Label>
                                 <Input
                                     id="temperature"
                                     type="number"

@@ -1,62 +1,15 @@
 'use client'
 import { Button } from '@/components/ui/button'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
-import { Home, LogOut, StopCircle, Triangle } from 'lucide-react'
-import { SquareTerminal, Bot, Code2, Book, Settings2, LifeBuoy, SquareUser } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { usePathname } from 'next/navigation'
 import ProfilDropDownMenu from './profil-drop-down-menu'
+import { menuItems, bottomMenuItems } from '@/commons/consts/adminMenuItems'
 
 export default function SideBar() {
     const router = useRouter()
     const pathname = usePathname()
-
-    const menuItems = [
-        {
-            icon: <Home className="size-5" />,
-            label: "Ana Sayfa",
-            path: "/admin/dashboard"
-        },
-        {
-            icon: <SquareTerminal className="size-5" />,
-            label: "Oyun Alanı",
-            path: "/admin/dashboard/playground"
-        },
-        {
-            icon: <Book className="size-5" />,
-            label: "Dokümantasyon",
-            path: "/admin/dashboard/docs"
-        },
-        {
-            icon: <Settings2 className="size-5" />,
-            label: "Ayarlar",
-            path: "/admin/dashboard/settings"
-        },
-        {
-            icon: <StopCircle className="size-5" />,
-            label: "Yasaklı",
-            path: "/admin/dashboard/banned"
-        },
-        {
-            icon: <Code2 className="size-5" />,
-            label: "Komut",
-            path: "/admin/dashboard/prompt"
-        }
-    ]
-
-    const bottomMenuItems = [
-        {
-            icon: <LifeBuoy className="size-5" />,
-            label: "Yardım",
-            path: "/admin/dashboard/help"
-        },
-        {
-            icon: <SquareUser className="size-5" />,
-            label: "Profil",
-            path: "/admin/dashboard/account"
-        }
-    ]
 
     return (
         <aside className="inset-y fixed left-0 z-20 flex h-full flex-col border-r">
@@ -81,7 +34,7 @@ export default function SideBar() {
                                 aria-label={item.label}
                                 onClick={() => router.push(item.path)}
                             >
-                                {item.icon}
+                                <item.icon className="size-5" />
                             </Button>
                         </TooltipTrigger>
                         <TooltipContent side="right" sideOffset={5}>
