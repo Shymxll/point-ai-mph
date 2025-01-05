@@ -19,7 +19,6 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json(response);
     } catch (error) {
-        console.error(error);
         return NextResponse.json({ error: 'Bir hata oluştu. Lütfen daha sonra tekrar deneyiniz...' }, { status: 500 });
     }
 }

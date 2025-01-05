@@ -72,10 +72,8 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
 
     const onSubmit = async (data: ChangeUserPassword) => {
         try {
-            console.log(data)
             changePasswordMutation.mutate(data)
         } catch (error) {
-            console.error('Password change failed:', error)
         }
     }
 

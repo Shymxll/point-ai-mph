@@ -69,7 +69,6 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
         try {
             changePasswordMutation.mutate(data)
         } catch (error) {
-            console.error('Password change failed:', error)
         }
     }
 

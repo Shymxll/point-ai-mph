@@ -59,7 +59,6 @@ export function EditPromptDialog({ promptId, promptName, promptState, onSuccess 
     })
 
     const onSubmit = async (values: PromptUpdate) => {
-        console.log(values)
         mutation.mutate({
             promptId: promptId,
             promptName: values.promptName,

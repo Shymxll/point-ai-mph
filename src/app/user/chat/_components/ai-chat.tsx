@@ -36,9 +36,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
   const auth = useAuth()
 
   const { data, isLoading: promptLoading, error } = useUserPromptGetList();
-  console.log("Prompt Data:", data);
   const { data: bannedData, isLoading: bannedLoading, error: bannedError } = useUserBannedGetList();
-  console.log("Banned Data:", bannedData);
   // Scroll ref tanımlaması
   const scrollRef = useRef<HTMLDivElement | null>(null)
 

@@ -33,8 +33,6 @@ export function EditBannedDialog({ bannedId, bannedName, bannedState, onSuccess 
         getBannedById.refetch()
     }, [bannedId])
 
-    console.log("getBannedById",bannedId)
-    console.log(getBannedById)
 
     const updateMutation = useAdminBannedUpdate(
         () => {
