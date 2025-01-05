@@ -2,8 +2,11 @@ import { Lock, LogOut, SquareUser } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu,  DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import Link from "next/link";
+import authService from "@/commons/services/AuthService";
+import { useRouter } from "next/navigation";
 
 export default function ProfilDropDownMenu() {
+    const router = useRouter();
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -13,10 +16,15 @@ export default function ProfilDropDownMenu() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="ml-10">
                 <DropdownMenuItem >
-                    <Link href="/admin/dashboard/account" className="flex items-center">
+                    <div onClick={
+                        () => {
+                            authService.logout()
+                            router.push('/admin/login')
+                        }
+                    }  className="flex items-center">
                         <LogOut className="mr-2 h-4 w-4" />
                        Çıkış Yap
-                    </Link> 
+                    </div> 
                 </DropdownMenuItem>
                 <DropdownMenuItem> 
                     <Link href="/admin/dashboard/account" className="flex items-center"> 
