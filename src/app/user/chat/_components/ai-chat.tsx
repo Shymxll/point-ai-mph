@@ -177,15 +177,6 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
 
   return (
     <div className="flex h-screen flex-col w-full justify-center overflow-hidden relative">
-      <div className="absolute inset-0 z-0">
-        <Image
-          src="/mphLogo.png"
-          alt="background logo"
-          layout="fill"
-          objectFit="contain"
-          className="opacity-5 w-full h-full py-20 pb-40"
-        />
-      </div>
       <div className="flex-1 p-4 space-y-4 overflow-auto w-full h-screen items-end md:px-52 relative z-10">
         {messages.map((message: QuestionGroupDetails, index) => (
           <div key={index}>
