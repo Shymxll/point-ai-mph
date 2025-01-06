@@ -7,6 +7,7 @@ import {
     DialogHeader,
     DialogOverlay,
     DialogTitle,
+    DialogDescription,
 } from "@/components/ui/dialog"
 import {
     Form,
@@ -58,7 +59,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
             toast.success("Şifre değiştirildi!")
             onOpenChange(false)
             authService.logout()
-            router.push('/admin/login')
+            window.location.href = '/admin/login'
         },
         (error) => {
             toast.error("Başarısız işlem!")
@@ -69,6 +70,7 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
         try {
             changePasswordMutation.mutate(data)
         } catch (error) {
+            console.error('Password change failed:', error)
         }
     }
 
@@ -78,6 +80,9 @@ export function ChangePasswordDialog({ open, onOpenChange }: ChangePasswordDialo
             <DialogContent >
                 <DialogHeader>
                     <DialogTitle>Şifre Değiştir</DialogTitle>
+                    <DialogDescription>
+                        Şifrenizi değiştirmek için aşağıdaki formu doldurun.
+                    </DialogDescription>
                 </DialogHeader>
 
                 <Form {...form}>

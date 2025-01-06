@@ -114,17 +114,17 @@ const LoginLayout = () => {
                     animate={{ height: '5px' }}
                     transition={{ delay: 0.5, duration: 0.5 }}
                 />
-                <motion.h1
+                <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 }}
                     className="text-3xl font-semibold mb-6 text-center text-black items-end"
                 >
-                    <motion.h1 className="text-4xl font-extrabold text-center text-black items-end">
+                    <motion.div className="text-4xl font-extrabold text-center text-black items-end">
                         Point AI
-                    </motion.h1>
+                    </motion.div>
                     Hoş Geldiniz
-                </motion.h1>
+                </motion.div>
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

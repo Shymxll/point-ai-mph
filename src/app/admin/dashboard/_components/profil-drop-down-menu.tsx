@@ -23,7 +23,7 @@ export default function ProfilDropDownMenu() {
                         <div onClick={
                             () => {
                                 authService.logout()
-                                router.push('/admin/login')
+                                window.location.href = '/admin/login'
                             }
                         } className="flex items-center">
                             <LogOut className="mr-2 h-4 w-4" />

@@ -16,8 +16,6 @@ class AuthService {
 
     async logout() {
         tokenService.clearAuthData();
-        router.push("/user/login");
-        window.location.reload();
     }
 
     async adminLogin(data: UserLogin): Promise<User> {
