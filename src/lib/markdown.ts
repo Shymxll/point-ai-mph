@@ -1,9 +1,10 @@
-
-
 // Markdown'ı düz metne çeviren fonksiyon
 export const convertMarkdownToPlainText = (markdown: string): string => {
-    // Code block'ları temizle
-    let text = markdown.replace(/```[\s\S]*?```/g, '');
+    // Code block'ları ayrı satıra al ve formatı koru
+    let text = markdown.replace(/```([\s\S]*?)```/g, '\n$1\n');
+
+    // Inline code'ları koru
+    text = text.replace(/`([^`]+)`/g, '$1');
 
     // Başlıkları temizle
     text = text.replace(/#{1,6}\s/g, '');
@@ -14,15 +15,17 @@ export const convertMarkdownToPlainText = (markdown: string): string => {
 
     // Listeleri düzenle
     text = text.replace(/^\s*[-*+]\s+/gm, '• ');
-    text = text.replace(/^\s*\d+\.\s+/gm, '');
+    // Numaralı listeleri koru, sadece fazla boşlukları temizle
+    text = text.replace(/^\s*(\d+)\.\s+/gm, '$1. ');
 
     // Linkleri sadece metne çevir
     text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
 
-    // Gereksiz boşlukları temizle
-    text = text.replace(/\n\s*\n/g, '\n\n');
-    text = text.trim();
+    // Gereksiz boşlukları temizle ama kod bloklarındaki boşlukları koru
+    text = text.replace(/\n\s*\n\s*\n/g, '\n\n');
 
+    // Başındaki ve sonundaki boşlukları temizle
+    text = text.trim();
 
     return text;
 }

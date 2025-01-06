@@ -225,7 +225,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                     remarkPlugins={[remarkGfm]}
                     components={{
                       pre: ({ ...props }) => (
-                        <pre className="bg-gray-800 text-white p-3 rounded-md overflow-auto" {...props} />
+                        <pre className="bg-gray-800 text-white p-3 rounded-md overflow-x-auto text-sm md:text-base whitespace-pre-wrap"  {...props} />
                       ),
                       h1: ({ children, ...props }) => (
                         <h1 className="text-xl md:text-2xl font-bold py-2" {...props}>
@@ -279,9 +279,10 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                       ),
                       code: ({ inline, ...props }) => (
                         inline
-                          ? <code className="bg-gray-200 dark:bg-gray-800 px-1 py-1 rounded text-xs md:text-sm" {...props} />
-                          : <code className="block text-xs md:text-sm" {...props} />
+                          ? <code className="bg-gray-200 dark:bg-gray-300 px-1 py-1 rounded text-xs md:text-sm" {...props} />
+                          : <code className="block w-full bg-gray-200 dark:bg-gray-800 p-3 rounded-md text-xs md:text-sm overflow-x-auto  whitespace-pre" {...props}  />
                       ),
+
                       ol: ({ ordered, children, ...props }) => (
                         <ol className="list-decimal pl-4 font-bold text-sm md:text-base" {...props}>
                           {children}
