@@ -18,6 +18,9 @@ import useUserPromptGetList from '../libs/hooks/useUserPromptGetList'
 import useUserBannedGetList from '../libs/hooks/useUserBannedGetList'
 import { BannedMainManager } from '@/commons/models/BannedModels'
 import { toast } from 'sonner'
+import { convertMarkdownToPlainText } from '@/lib/markdown'
+
+
 
 interface AIChatProps {
   groupId: number | undefined | null
@@ -60,13 +63,13 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
         role: 'system',
         content: bannedData?.data.map((banned: BannedMainManager) => banned.bannedName).join('\n') || ''
       },
-        {
-      content: question,
-      role: 'user',
-    }]).then((res: OpenaiResponse) => {
-      const responseMessage = res.choices[0].message.content
-      return responseMessage
-    })
+      {
+        content: question,
+        role: 'user',
+      }]).then((res: OpenaiResponse) => {
+        const responseMessage = res.choices[0].message.content
+        return responseMessage
+      })
   }
 
   const streamText = async (text: string) => {
@@ -207,8 +210,9 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                       !isStreaming && !isStopped && !isSending &&
                       <button
                         onClick={() => {
-                          navigator.clipboard.writeText(message.answer)
-                          toast.success("Kopyalandı!")
+                          const plainText = convertMarkdownToPlainText(message.answer);
+                          navigator.clipboard.writeText(plainText);
+                          toast.success("Kopyalandı!");
                         }}
                         disabled={isStreaming || isStopped || isSending}
                         hidden={isStreaming || isStopped || isSending}
@@ -307,8 +311,8 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
 
       <div className="border-t p-4 bg-primary relative z-10">
         <form onSubmit={handleSubmit} className="justify-center flex space-x-2 relative">
-          
-          <StopCircleIcon 
+
+          <StopCircleIcon
             className={`h-9 w-9 text-end text-white hover:text-primary hover:bg-white hover:rounded-md text-primary cursor-pointer justify-end ${!isStreaming && 'opacity-50 cursor-not-allowed'}`}
             onClick={isStreaming ? handleStop : undefined}
           />
@@ -318,9 +322,9 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
             placeholder="Mesajınızı yazın..."
             className="lg:max-w-[calc(100%-440px)] sm:max-w-full flex-1 text-base bg-white "
           />
-          
-          
-          
+
+
+
           <Button
             type="submit"
             disabled={isLoading}
