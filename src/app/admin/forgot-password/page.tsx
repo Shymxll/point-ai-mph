@@ -5,24 +5,28 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import Image from 'next/image'
 import Link from 'next/link'
-
+import useUserForgetPassword from '@/app/user/forgot-password/lib/hooks/useUserForgetPassword'
+import { toast } from 'sonner'
+import { useRouter } from 'next/navigation'
 export default function ForgotPassword() {
     const [email, setEmail] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [message, setMessage] = useState('')
+    const router = useRouter()
+
+    const forgetPasswordMutation = useUserForgetPassword(
+        () => {
+            toast.success("Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.")
+            router.push('/admin/login')
+            setEmail('')
+        },
+        (error: string) => {
+            toast.error("Bir hata oluştu. Lütfen tekrar deneyin.")
+        }
+    )
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        setIsLoading(true)
-        setMessage('')
-
-        try {
-            // TODO: Implement password reset logic
-            setMessage('Şifre sıfırlama bağlantısı e-posta adresinize gönderildi.')
-        } catch{
-            setMessage('Bir hata oluştu. Lütfen tekrar deneyin.')
-        } finally {
-            setIsLoading(false)
-        }
+        forgetPasswordMutation.mutate(email)
     }
 
     return (
@@ -73,7 +77,7 @@ export default function ForgotPassword() {
 
                     <div className="text-center">
                         <Link
-                            href="/user/login"
+                            href="/admin/login"
                             className="text-sm text-primary hover:text-rose-700"
                         >
                             Giriş sayfasına dön

@@ -95,7 +95,7 @@ const LoginLayout = () => {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
-                className="bg-white p-8 rounded-lg shadow-2xl w-96 h-[420px] relative overflow-hidden"
+                className="bg-white p-8 rounded-lg shadow-2xl w-96 h-[460px] relative overflow-hidden"
             >
                 <motion.div
                     initial={{ opacity: 0, y: -20 }}
@@ -110,21 +110,21 @@ const LoginLayout = () => {
 
                 <motion.div
                     className="absolute inset-0 bg-red-600"
-                    initial={{ height: '100%' }}
+                    initial={{ height: '130%' }}
                     animate={{ height: '5px' }}
                     transition={{ delay: 0.5, duration: 0.5 }}
                 />
-                <motion.div
+                <motion.h1
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 }}
                     className="text-3xl font-semibold mb-6 text-center text-black items-end"
                 >
-                    <motion.div className="text-4xl font-extrabold text-center text-black items-end">
+                    <motion.h1 className="text-4xl font-extrabold text-center text-black items-end">
                         Point AI
-                    </motion.div>
+                    </motion.h1>
                     Hoş Geldiniz
-                </motion.div>
+                </motion.h1>
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
