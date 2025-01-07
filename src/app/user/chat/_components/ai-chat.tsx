@@ -19,6 +19,7 @@ import useUserBannedGetList from '../libs/hooks/useUserBannedGetList'
 import { BannedMainManager } from '@/commons/models/BannedModels'
 import { toast } from 'sonner'
 import { convertMarkdownToPlainText } from '@/lib/markdown'
+import { VoiceRecorder } from '@/components/ui/voice-recorder'
 
 
 
@@ -271,7 +272,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                       code: ({ inline, ...props }) => (
                         inline
                           ? <code className="bg-gray-200 dark:bg-gray-300 px-1 py-1 rounded text-xs md:text-sm" {...props} />
-                          : <code className="block w-full bg-gray-200 dark:bg-gray-800 p-3 rounded-md text-xs md:text-sm overflow-x-auto  whitespace-pre" {...props}  />
+                          : <code className="block w-full bg-gray-200 dark:bg-gray-800 p-3 rounded-md text-xs md:text-sm overflow-x-auto  whitespace-pre" {...props} />
                       ),
 
                       ol: ({ ordered, children, ...props }) => (
@@ -303,7 +304,6 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
 
       <div className="border-t p-4 bg-primary relative z-10">
         <form onSubmit={handleSubmit} className="justify-center flex space-x-2 relative">
-
           <StopCircleIcon
             className={`h-9 w-9 text-end text-white hover:text-primary hover:bg-white hover:rounded-md text-primary cursor-pointer justify-end ${!isStreaming && 'opacity-50 cursor-not-allowed'}`}
             onClick={isStreaming ? handleStop : undefined}
@@ -312,10 +312,13 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Mesajınızı yazın..."
-            className="lg:max-w-[calc(100%-440px)] sm:max-w-full flex-1 text-base bg-white "
+            className="lg:max-w-[calc(100%-440px)] sm:max-w-full flex-1 text-base bg-white"
           />
 
-
+          <VoiceRecorder
+            onTranscription={(text) => setInput(String(text))}
+            isDisabled={isLoading || isStreaming}
+          />
 
           <Button
             type="submit"
