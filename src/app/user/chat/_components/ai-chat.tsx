@@ -187,7 +187,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
             <div className="flex justify-end mb-4">
               <div className="flex gap-3 items-center">
                 <div
-                  className="rounded-lg md:max-w-[600px] max-w-[300px] bg-gray-200 text-primary-foreground p-3 text-sm md:text-base break-words text-gray-800"
+                  className="rounded-lg md:max-w-[600px] max-w-[300px] bg-gray-200  p-3 text-sm md:text-base break-words text-gray-800"
                 >
                   {message?.question}
                 </div>
