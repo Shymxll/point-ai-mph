@@ -20,6 +20,8 @@ import { BannedMainManager } from '@/commons/models/BannedModels'
 import { toast } from 'sonner'
 import { convertMarkdownToPlainText } from '@/lib/markdown'
 import { VoiceRecorder } from '@/components/ui/voice-recorder'
+import { Textarea } from '@/components/ui/textarea'
+import { StopCircle } from 'lucide-react';
 
 
 
@@ -185,7 +187,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
             <div className="flex justify-end mb-4">
               <div className="flex gap-3 items-center">
                 <div
-                  className="rounded-lg max-w-[600px] bg-primary text-primary-foreground p-3 text-sm md:text-sm break-words"
+                  className="rounded-lg md:max-w-[600px] max-w-[300px] bg-gray-200 text-primary-foreground p-3 text-sm md:text-base break-words text-gray-800"
                 >
                   {message?.question}
                 </div>
@@ -196,28 +198,27 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
             {/* AI Yanıtı */}
             <div className="flex justify-start mb-4">
               <div className="flex gap-3 items-center flex-row-reverse">
-                <div className="rounded-lg max-w-[600px] bg-muted p-3 text-sm break-words prose prose-sm dark:prose-invert">
-                  <div className="flex justify-end mb-2">
-                    {
-                      !isStreaming && !isStopped && !isSending &&
-                      <button
-                        onClick={() => {
-                          const plainText = convertMarkdownToPlainText(message.answer);
-                          navigator.clipboard.writeText(plainText);
-                          toast.success("Kopyalandı!");
-                        }}
-                        disabled={isStreaming || isStopped || isSending}
-                        hidden={isStreaming || isStopped || isSending}
-                        className="text-xs px-2 py-1 rounded bg-gray-100 hover:bg-gray-200 transition-colors duration-200 text-gray-600"
-                      >
-                        Kopyala
-                      </button>}
-                  </div>
+                <div className="rounded-lg max-w-[600px] bg-white p-3 text-sm break-words prose prose-sm dark:prose-invert">
+
                   <ReactMarkdown
                     remarkPlugins={[remarkGfm]}
                     components={{
-                      pre: ({ ...props }) => (
-                        <pre className="bg-gray-800 text-white p-3 rounded-md overflow-x-auto text-sm md:text-base whitespace-pre-wrap"  {...props} />
+                      pre: ({ children, ...props }) => (
+                        <pre className="bg-gray-800 md:my-1 text-white p-3 rounded-md overflow-x-auto text-sm md:text-base whitespace-pre-wrap"  {...props} >
+                          
+                          <div className="flex justify-between items-center">
+                            <div className="flex items-center gap-2">
+                              <div className="w-3 h-3 bg-gray-900 rounded-full"></div>
+                              <div className="w-3 h-3 bg-gray-600 rounded-full"></div>
+                              <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs border border-gray-500 rounded-md px-2 py-1 cursor-pointer">Kopyala</span>
+                            </div>
+                          </div>
+
+                          {children}
+                        </pre>
                       ),
                       h1: ({ children, ...props }) => (
                         <h1 className="text-xl md:text-2xl font-bold py-2" {...props}>
@@ -302,31 +303,51 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
         <div ref={scrollRef} />
       </div>
 
-      <div className="border-t p-4 bg-primary relative z-10">
-        <form onSubmit={handleSubmit} className="justify-center flex space-x-2 relative">
-          <StopCircleIcon
-            className={`h-9 w-9 text-end text-white hover:text-primary hover:bg-white hover:rounded-md text-primary cursor-pointer justify-end ${!isStreaming && 'opacity-50 cursor-not-allowed'}`}
-            onClick={isStreaming ? handleStop : undefined}
-          />
-          <Input
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Mesajınızı yazın..."
-            className="lg:max-w-[calc(100%-440px)] sm:max-w-full flex-1 text-base bg-white"
-          />
-
-          <VoiceRecorder
-            onTranscription={(text) => setInput(String(text))}
-            isDisabled={isLoading || isStreaming}
-          />
-
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="bg-white hover:bg-rose-700 hover:text-white text-primary"
-          >
-            {isLoading ? 'Düşünüyor...' : 'Gönder'}
-          </Button>
+      <div className=" p-4 bg-white relative z-10">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <div className="flex items-center gap-2">
+            <div className="flex-1 flex gap-2 justify-center ">
+              <div className="flex flex-col md:w-3/4 w-full border h-full bg-gray-100 rounded-md justify-center md:px-1">
+                <textarea
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Mesajınızı yazın..."
+                  className="w-full pr-10  bg-gray-100 border-0 outline-none hover:outline-none resize-none rounded-md p-3 text-sm shadow-none focus:outline-none focus:ring-0 focus:border-0 focus:shadow-none click"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                      e.preventDefault();
+                      if (input.trim()) {
+                        handleSubmit(e as any);
+                      }
+                    }
+                  }}
+                />
+                <div className="flex justify-between items-center gap-2 m-2">
+                  <VoiceRecorder
+                    onTranscription={(text) => setInput(text)}
+                    isDisabled={isLoading || isStreaming}
+                  />
+                  {isStreaming ? (
+                    <Button
+                      type="button"
+                      onClick={handleStop}
+                      className="bg-red-500 hover:bg-red-600 text-white gap-2"
+                    >
+                      <StopCircle className="h-4 w-4" />
+                    </Button>
+                  ) : (
+                    <Button
+                      type="submit"
+                      disabled={isLoading || !input.trim()}
+                      className="bg-white hover:bg-rose-700 hover:text-white text-primary"
+                    >
+                      {isLoading ? 'Düşünüyor...' : 'Gönder'}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
         </form>
       </div>
     </div>

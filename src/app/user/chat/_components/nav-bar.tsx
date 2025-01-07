@@ -24,9 +24,9 @@ export function Navbar({ onChangePasswordClick }: NavbarProps) {
 
     return (
         <nav className="border-b">
-            <div className="flex h-14 items-center justify-between px-4 bg-primary">
+            <div className="flex h-14 items-center justify-between px-4 bg-white">
                 <SidebarTrigger
-                    className="bg-gray-100 text-black rounded-full p-2"
+                    className="bg-gray-100 text-black rounded-full p-2 border-primary"
                 />
                 <div className="ml-auto flex items-center space-x-4">
                     <DropdownMenu>
