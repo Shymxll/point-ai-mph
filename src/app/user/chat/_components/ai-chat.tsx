@@ -61,19 +61,43 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
 
 
   const sendAI = async (question: string): Promise<string> => {
-    return openaiService.sendOpenaiRequest(
-      [{
-        role: 'system',
-        content: bannedData?.data.map((banned: BannedMainManager) => banned.bannedName).join('\n') || ''
-      },
-      {
-        content: question,
-        role: 'user',
-      }]).then((res: OpenaiResponse) => {
-        const responseMessage = res.choices[0].message.content
-        return responseMessage
-      })
-  }
+    // Sistem mesajı
+    const systemMessage = {
+      role: 'system',
+      content: `Sen Point AI'nın bir parçası olan yardımcı bir asistansın. 
+      Yasaklı kelimeler: ${bannedData?.data.map((banned: BannedMainManager) => banned.bannedName).join(', ')}
+      Bu kelimeleri kullanmaktan kaçın.`
+    };
+
+    // Önceki mesajları formatlayarak ekle
+    const messageHistory = messages.map(msg => ({
+      role: msg.question ? 'user' : 'assistant',
+      content: "Soru: " + msg.question + " Cevap: " + msg.answer
+    }));
+
+    // Yeni soruyu ekle
+    const currentMessage = {
+      role: 'user',
+      content: question
+    };
+
+    const oldMessagesAlert = {
+      role: 'system',
+      content: "Seninle eski mesajlarının da içinde bulunduğunu unutma.Benim sorduklarım `Soru` , senin cevapladığın `Cevap` olarak düşün."
+    }
+    // Tüm mesajları birleştir
+    const allMessages = [
+      systemMessage,
+      oldMessagesAlert,
+      ...messageHistory,
+      currentMessage
+    ];
+
+    return openaiService.sendOpenaiRequest(allMessages).then((res: OpenaiResponse) => {
+      const responseMessage = res.choices[0].message.content;
+      return responseMessage;
+    });
+  };
 
   const streamText = async (text: string) => {
     setIsStreaming(true);
@@ -191,7 +215,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                 >
                   {message?.question}
                 </div>
-                <Avatar className="w-5 h-5 border rounded-full bg-black hidden sm:block" />
+                <Avatar className="w-5 h-5 border rounded-full bg-black bg-center hidden sm:block" />
               </div>
             </div>
 
@@ -207,19 +231,19 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                         <div className="flex flex-col gap-2 w-full ">
                           <pre className="bg-gray-800 md:my-1 text-white p-3 rounded-md w-[300px] md:w-full overflow-x-auto block text-sm md:text-base whitespace-pre-wrap"  {...props} >
 
-                          <div className="flex justify-between items-center">
-                            <div className="flex items-center gap-2">
-                              <div className="w-3 h-3 bg-gray-900 rounded-full"></div>
-                              <div className="w-3 h-3 bg-gray-600 rounded-full"></div>
-                              <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                            <div className="flex justify-between items-center">
+                              <div className="flex items-center gap-2">
+                                <div className="w-3 h-3 bg-gray-900 rounded-full"></div>
+                                <div className="w-3 h-3 bg-gray-600 rounded-full"></div>
+                                <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs border border-gray-500 rounded-md px-2 py-1 cursor-pointer">Kopyala</span>
+                              </div>
                             </div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs border border-gray-500 rounded-md px-2 py-1 cursor-pointer">Kopyala</span>
-                            </div>
-                          </div>
 
-                          {children}
-                        </pre>
+                            {children}
+                          </pre>
                         </div>
                       ),
                       h1: ({ children, ...props }) => (
@@ -346,10 +370,13 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                   }}
                 />
                 <div className="flex justify-between items-center gap-2 m-2">
+                  {/*
                   <VoiceRecorder
                     onTranscription={(text) => setInput(text)}
                     isDisabled={isLoading || isStreaming}
                   />
+                  */ }
+                  <div className="flex items-center gap-2"></div>
                   {isStreaming ? (
                     <Button
                       type="button"
