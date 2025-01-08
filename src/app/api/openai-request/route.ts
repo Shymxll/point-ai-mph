@@ -14,9 +14,9 @@ export async function POST(req: NextRequest) {
             messages: data.map((item: OpenaiRequest) => ({
                 role: item.role,
                 content: item.content
-            })) as ChatCompletionMessageParam[]
+            })) as ChatCompletionMessageParam[],
+            store: true,
         });
-
         return NextResponse.json(response);
     } catch (error) {
         return NextResponse.json({ error: 'Bir hata oluştu. Lütfen daha sonra tekrar deneyiniz...' }, { status: 500 });

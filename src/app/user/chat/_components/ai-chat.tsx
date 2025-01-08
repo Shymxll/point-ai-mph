@@ -204,8 +204,9 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                     remarkPlugins={[remarkGfm]}
                     components={{
                       pre: ({ children, ...props }) => (
-                        <pre className="bg-gray-800 md:my-1 text-white p-3 rounded-md overflow-x-auto text-sm md:text-base whitespace-pre-wrap"  {...props} >
-                          
+                        <div className="flex flex-col gap-2 w-full ">
+                          <pre className="bg-gray-800 md:my-1 text-white p-3 rounded-md w-[300px] md:w-full overflow-x-auto block text-sm md:text-base whitespace-pre-wrap"  {...props} >
+
                           <div className="flex justify-between items-center">
                             <div className="flex items-center gap-2">
                               <div className="w-3 h-3 bg-gray-900 rounded-full"></div>
@@ -219,6 +220,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
 
                           {children}
                         </pre>
+                        </div>
                       ),
                       h1: ({ children, ...props }) => (
                         <h1 className="text-xl md:text-2xl font-bold py-2" {...props}>
@@ -275,7 +277,28 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                           ? <code className="bg-gray-200 dark:bg-gray-300 px-1 py-1 rounded text-xs md:text-sm" {...props} />
                           : <code className="block w-full bg-gray-200 dark:bg-gray-800 p-3 rounded-md text-xs md:text-sm overflow-x-auto  whitespace-pre" {...props} />
                       ),
-
+                      table: ({ children, ...props }) => (
+                        <div className="w-full my-1">
+                          <table className="table-auto w-[300px] md:w-full overflow-x-auto block" {...props}>
+                            {children}
+                          </table>
+                        </div>
+                      ),
+                      tr: ({ children, ...props }) => (
+                        <tr className="border-b border-gray-200" {...props}>
+                          {children}
+                        </tr>
+                      ),
+                      td: ({ children, ...props }) => (
+                        <td className="border border-gray-200 p-2 whitespace-nowrap" {...props}>
+                          {children}
+                        </td>
+                      ),
+                      th: ({ children, ...props }) => (
+                        <th className="border border-gray-200 p-2 whitespace-nowrap" {...props}>
+                          {children}
+                        </th>
+                      ),
                       ol: ({ ordered, children, ...props }) => (
                         <ol className="list-decimal pl-4 font-bold text-sm md:text-base" {...props}>
                           {children}

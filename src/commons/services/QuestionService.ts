@@ -16,10 +16,12 @@ export class QuestionService {
         question,
         answer,
     }: QuestionDetailInsert): Promise<{
-        data:{groupId: string;
-        getValue: number;}
+        data: {
+            groupId: string;
+            getValue: number;
+        }
     }> {
-        return await api.post(`questiondetail/question-detail-insert/${userId}?groupId=${groupId ? groupId: ""}`, {
+        return await api.post(`questiondetail/question-detail-insert/${userId}?groupId=${groupId ? groupId : ""}`, {
             question,
             answer,
         });
@@ -113,7 +115,7 @@ export class QuestionService {
         return await api.get(`banned/banned-get-list`);
     }
 
-    
+
 
 
 
