@@ -228,20 +228,27 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                     remarkPlugins={[remarkGfm]}
                     components={{
                       pre: ({ children, ...props }) => (
-                        <div className="flex flex-col gap-2 w-full ">
-                          <pre className="bg-gray-800 md:my-1 text-white p-3 rounded-md w-[300px] md:w-full overflow-x-auto block text-sm md:text-base whitespace-pre-wrap"  {...props} >
-
-                            <div className="flex justify-between items-center">
-                              <div className="flex items-center gap-2">
-                                <div className="w-3 h-3 bg-gray-900 rounded-full"></div>
-                                <div className="w-3 h-3 bg-gray-600 rounded-full"></div>
-                                <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs border border-gray-500 rounded-md px-2 py-1 cursor-pointer">Kopyala</span>
-                              </div>
+                        <div className="flex flex-col w-full ">
+                          <div className="flex mr-1 md:mr-0 justify-between items-center bg-gray-800 px-2 py-1 rounded-t-md ">
+                            <div className="flex items-center gap-2 ">
+                              <div className="w-3 h-3 bg-gray-900 rounded-full"></div>
+                              <div className="w-3 h-3 bg-gray-600 rounded-full"></div>
+                              <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
                             </div>
-
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs border border-gray-500 rounded-md px-2 py-1 cursor-pointer text-white"
+                                onClick={() => {
+                                  // Get the actual text content from the pre element
+                                  const preElement = children?.props?.children;
+                                  const textToCopy = typeof preElement === 'string' ? preElement : '';
+                                  navigator.clipboard.writeText(textToCopy);
+                                  toast.success('Kopyalandı');
+                                }}
+                              >Kopyala</span>
+                            </div>
+                          </div>
+                          <pre className="bg-gray-800 border-t-none  text-white p-3 rounded-b-md w-[300px] md:w-full overflow-x-auto block text-sm md:text-base scrollbar-t hin scrollbar-thumb-gray-800 scrollbar-track-gray-700 " {...props} >
+                                            
                             {children}
                           </pre>
                         </div>
@@ -299,7 +306,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                       code: ({ inline, ...props }) => (
                         inline
                           ? <code className="bg-gray-200 dark:bg-gray-300 px-1 py-1 rounded text-xs md:text-sm" {...props} />
-                          : <code className="block w-full bg-gray-200 dark:bg-gray-800 p-3 rounded-md text-xs md:text-sm overflow-x-auto  whitespace-pre" {...props} />
+                          : <code className="block w-full bg-gray-800 text-white dark:bg-gray-800 p-3 rounded-md text-xs md:text-sm overflow-x-auto  whitespace-pre" {...props} />
                       ),
                       table: ({ children, ...props }) => (
                         <div className="w-full my-1">
