@@ -1,67 +1,116 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Button } from './button'
 import { Mic, Square, Loader2 } from 'lucide-react'
-import speechService from '@/commons/services/SpeechService'
 import { toast } from 'sonner'
+
+// Web Speech API için TypeScript tipleri
+declare global {
+    interface Window {
+        webkitSpeechRecognition: new () => SpeechRecognition;
+        SpeechRecognition: new () => SpeechRecognition;
+    }
+}
+
+interface SpeechRecognitionEvent {
+    results: {
+        [index: number]: {
+            [index: number]: {
+                transcript: string;
+            };
+        };
+    };
+    resultIndex: number;
+}
+
+interface SpeechRecognitionErrorEvent {
+    error: string;
+    message: string;
+}
+
+interface SpeechRecognition extends EventTarget {
+    continuous: boolean;
+    interimResults: boolean;
+    lang: string;
+    start: () => void;
+    stop: () => void;
+    onresult: (event: SpeechRecognitionEvent) => void;
+    onerror: (event: SpeechRecognitionErrorEvent) => void;
+}
 
 interface VoiceRecorderProps {
     onTranscription: (text: string) => void
     isDisabled?: boolean
+    onStop: () => void
+    onStart: () => void
 }
 
-export function VoiceRecorder({ onTranscription, isDisabled = false }: VoiceRecorderProps) {
+export function VoiceRecorder({ onTranscription, isDisabled = false, onStop, onStart }: VoiceRecorderProps) {
     const [isRecording, setIsRecording] = useState(false)
     const [isProcessing, setIsProcessing] = useState(false)
-    const mediaRecorderRef = useRef<MediaRecorder | null>(null)
-    const chunksRef = useRef<Blob[]>([])
+    const recognitionRef = useRef<SpeechRecognition | null>(null)
 
     const startRecording = async () => {
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
-            const mediaRecorder = new MediaRecorder(stream, {
-                mimeType: 'audio/webm'
-            })
-            mediaRecorderRef.current = mediaRecorder
-            chunksRef.current = []
-
-            mediaRecorder.ondataavailable = (e) => {
-                if (e.data.size > 0) {
-                    chunksRef.current.push(e.data)
-                }
+            onStart()
+            // Web Speech API'yi başlat
+            if (!('webkitSpeechRecognition' in window)) {
+                toast.error('Tarayıcınız konuşma tanımayı desteklemiyor');
+                return;
             }
 
-            mediaRecorder.onstop = async () => {
-                const audioBlob = new Blob(chunksRef.current, { type: 'audio/webm' })
-                try {
-                    setIsProcessing(true)
-                    const text = await speechService.convertSpeechToText(audioBlob)
-                    console.log("text", text)
-                    onTranscription(text)
-                } catch (error) {
-                    console.error('Recording error:', error)
-                    toast.error('Ses dönüştürme işlemi başarısız oldu')
-                } finally {
-                    setIsProcessing(false)
-                }
-                stream.getTracks().forEach(track => track.stop())
-            }
+            const SpeechRecognition = window.webkitSpeechRecognition || window.SpeechRecognition;
+            const recognition = new SpeechRecognition();
+            recognitionRef.current = recognition;
 
-            mediaRecorder.start(200)
-            setIsRecording(true)
+            // Ayarlar
+            recognition.continuous = true; // Sürekli dinleme
+            recognition.interimResults = true; // Geçici sonuçları da göster
+            recognition.lang = 'tr-TR'; // Türkçe dil desteği
+
+            // Sonuçları dinle
+            recognition.onresult = (event: SpeechRecognitionEvent) => {
+                const results = Array.from(Object.values(event.results));
+                const transcript = results
+                    .map(result => result[0].transcript)
+                    .join('');
+
+                onTranscription(transcript);
+            };
+
+            // Hata durumunda
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                toast.error('Ses tanıma hatası oluştu');
+                stopRecording();
+            };
+
+            // Başlat
+            recognition.start();
+            setIsRecording(true);
         } catch (error) {
-            console.error('MediaRecorder error:', error)
-            toast.error('Mikrofona erişim sağlanamadı')
+            console.error('Speech recognition error:', error);
+            toast.error('Ses tanıma başlatılamadı');
         }
     }
 
     const stopRecording = () => {
-        if (mediaRecorderRef.current && isRecording) {
-            mediaRecorderRef.current.stop()
-            setIsRecording(false)
+        onStop()
+        if (recognitionRef.current) {
+            recognitionRef.current.stop();
+            setIsRecording(false);
         }
     }
+
+    // Component unmount olduğunda kaydı durdur
+    useEffect(() => {
+        return () => {
+            if (recognitionRef.current) {
+                recognitionRef.current.stop();
+            }
+        }
+    }, []);
 
     return (
         <div className="flex items-center gap-2">

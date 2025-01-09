@@ -39,6 +39,8 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
   const [isStreaming, setIsStreaming] = useState(false)
   const [isStopped, setIsStopped] = useState(false)
   const [isSending, setIsSending] = useState(false)
+  const [voiceInput, setVoiceInput] = useState('')
+  const [stockInput, setStockInput] = useState('')
   const auth = useAuth()
 
   const { data, isLoading: promptLoading, error } = useUserPromptGetList();
@@ -248,7 +250,7 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                             </div>
                           </div>
                           <pre className="bg-gray-800 border-t-none  text-white p-3 rounded-b-md w-[300px] md:w-full overflow-x-auto block text-sm md:text-base scrollbar-t hin scrollbar-thumb-gray-800 scrollbar-track-gray-700 " {...props} >
-                                            
+
                             {children}
                           </pre>
                         </div>
@@ -377,12 +379,24 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                   }}
                 />
                 <div className="flex justify-between items-center gap-2 m-2">
-                  {/*
                   <VoiceRecorder
-                    onTranscription={(text) => setInput(text)}
+                    onTranscription={(text) => {
+                      setInput(input + text);
+                      setStockInput(input);
+
+                    }}
+                    onStart={() => {
+                      setInput(input + ' ');
+                      setStockInput(input);
+                      setInput(input);
+
+                    }}
+                    onStop={() => {
+                      
+                    }}
+                    
                     isDisabled={isLoading || isStreaming}
                   />
-                  */ }
                   <div className="flex items-center gap-2"></div>
                   {isStreaming ? (
                     <Button

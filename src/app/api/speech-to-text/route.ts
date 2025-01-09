@@ -35,7 +35,8 @@ export async function POST(req: NextRequest) {
         const response = await openai.audio.transcriptions.create({
             file: await import('fs').then(fs => fs.createReadStream(tempFilePath)),
             model: 'whisper-1',
-            language: 'tr'
+            language: 'tr',
+            
         });
 
         // Geçici dosyayı sil
