@@ -81,7 +81,6 @@ export function VoiceRecorder({ onTranscription, isDisabled = false, onStop, onS
 
             // Hata durumunda
             recognition.onerror = (event) => {
-                console.error('Speech recognition error:', event.error);
                 toast.error('Ses tanıma hatası oluştu');
                 stopRecording();
             };
@@ -90,7 +89,6 @@ export function VoiceRecorder({ onTranscription, isDisabled = false, onStop, onS
             recognition.start();
             setIsRecording(true);
         } catch (error) {
-            console.error('Speech recognition error:', error);
             toast.error('Ses tanıma başlatılamadı');
         }
     }

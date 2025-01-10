@@ -18,13 +18,10 @@ class SpeechService {
             });
 
             if (!data?.text) {
-                console.error('API response:', data);
                 throw new Error('API yanıtında text alanı bulunamadı');
             }
-            console.log("data", data)
             return data.text.toString();
         } catch (error) {
-            console.error('Speech to text error:', error);
             if (error instanceof Error) {
                 throw new Error(`Ses dönüştürme hatası: ${error.message}`);
             }

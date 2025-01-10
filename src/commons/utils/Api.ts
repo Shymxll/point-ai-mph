@@ -27,9 +27,7 @@ class ApiService {
       (error) => Promise.reject(error),
     );
     this.api.interceptors.response.use(
-      (response) => {
-        console.log("response", response.data);
-       
+      (response) => {       
 
         if (
           response.data &&
@@ -46,10 +44,12 @@ class ApiService {
         return response;
       },
       (error) => {
-        console.log("errored", error.response?.status);
         if (error.response?.status === 401) {
-          console.log("oked")
-          window.location.href = "/user/login";
+          if (window.location.pathname.includes("admin")) {
+            window.location.href = "/admin/login";
+          } else {
+            window.location.href = "/user/login";
+          }
         }
         return Promise.reject(error);
       },

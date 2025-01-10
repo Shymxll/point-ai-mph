@@ -41,7 +41,6 @@ export async function POST(req: NextRequest) {
 
         // Geçici dosyayı sil
         unlinkSync(tempFilePath);
-        console.log("response", response)
         return NextResponse.json({ text: response.text });
     } catch (error) {
         // Hata durumunda da geçici dosyayı silmeyi dene
@@ -49,7 +48,6 @@ export async function POST(req: NextRequest) {
             unlinkSync(tempFilePath);
         } catch { }
 
-        console.error('Speech to text error:', error);
         const errorMessage = error instanceof Error ? error.message : 'Bilinmeyen bir hata oluştu';
         return NextResponse.json(
             { error: errorMessage },
