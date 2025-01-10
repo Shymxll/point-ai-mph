@@ -67,7 +67,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             }
         }
         // TODO: role check
-    }, [pathname, isAuthenticated, router]);
+    }, [pathname, isAuthenticated, router, user]);
 
     return (
         <AuthContext.Provider

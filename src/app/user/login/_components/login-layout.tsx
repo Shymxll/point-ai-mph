@@ -11,7 +11,7 @@ import generalService from '@/commons/services/GeneralService';
 import { Combobox } from '@/components/ui/combobox';
 import { convertObjectArrayToOptions } from '@/commons/utils/convertObjectArrayToOptions';
 import authService from '@/commons/services/AuthService';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import tokenService from '@/commons/services/TokenService';
 import { UserLogin } from '@/commons/models/AuthModels';
 import { useToast } from '@/context/ToastContext';
@@ -35,6 +35,7 @@ const LoginLayout = () => {
     const { onSetAuthenticated, onSetUser } = useAuth();
     const [isLoading, setIsLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false)
+    const pathname = usePathname();
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
@@ -55,7 +56,7 @@ const LoginLayout = () => {
         if (authToken) {
             router.push("/user/login");
         }
-    }, [router]);
+    }, [pathname, router]);
 
     const loginUserMutation = useMutation({
         mutationKey: ["user-login"],
@@ -114,7 +115,7 @@ const LoginLayout = () => {
                     animate={{ height: '5px' }}
                     transition={{ delay: 0.5, duration: 0.5 }}
                 />
-                <motion.h1
+                <motion.div
                     initial={{ opacity: 0, y: -20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.7 }}
@@ -124,7 +125,7 @@ const LoginLayout = () => {
                         Point AI
                     </motion.h1>
                     Hoş Geldiniz
-                </motion.h1>
+                </motion.div>
 
                 <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

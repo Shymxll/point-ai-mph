@@ -18,7 +18,7 @@ export const SChangeUserPassword = z.object({
         .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, "Şifre en az bir büyük harf, bir küçük harf ve bir rakam içermelidir"),
     duplicateNewPassword: z.string()
 }).refine((data) => data.newPassword === data.duplicateNewPassword, {
-    message: "Şifreler eşleşmiyor", 
+    message: "Şifreler eşleşmiyor",
     path: ["duplicateNewPassword"],
 })
 

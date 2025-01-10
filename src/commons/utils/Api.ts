@@ -1,4 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
+import router from "next/router";
+import tokenService from "../services/TokenService";
 
 class ApiService {
   private api: AxiosInstance;
@@ -24,14 +26,17 @@ class ApiService {
       },
       (error) => Promise.reject(error),
     );
-
     this.api.interceptors.response.use(
       (response) => {
+        console.log("response", response.data);
+       
+
         if (
           response.data &&
           response.data.statusCode &&
           response.data.statusCode === 400
         ) {
+
           const errorMessage = response.data.error?.errors[0];
           return Promise.reject({
             message: errorMessage,
@@ -41,6 +46,11 @@ class ApiService {
         return response;
       },
       (error) => {
+        console.log("errored", error.response?.status);
+        if (error.response?.status === 401) {
+          console.log("oked")
+          window.location.href = "/user/login";
+        }
         return Promise.reject(error);
       },
     );
