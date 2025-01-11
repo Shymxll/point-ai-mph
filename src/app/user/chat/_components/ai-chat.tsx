@@ -211,10 +211,10 @@ export function AIChat({ groupId, chatItems, sendMessage }: AIChatProps) {
                 >
                   {message?.question}
                 </div>
-                <Avatar className=' rounded-full border border-gray-200 p-1  hidden sm:block'>
+                <Avatar className=' rounded-full border border-gray-200  w-8 h-8 justify-center items-center  hidden sm:block'>
                   {/* Kullanıcı avatarını görüntülemek için IconName'i kullanıyoruz */}
-                  <AvatarImage alt="Kullanıcı"  />
-                  <AvatarFallback className="font-bold  ">
+                  <AvatarImage alt="Kullanıcı" className='w-full h-full text-center justify-center items-center' />
+                  <AvatarFallback className="font-bold flex items-center justify-center w-8 h-8">
                     {auth.user?.iconName || 'MPH'}
                   </AvatarFallback>
                 </Avatar>
